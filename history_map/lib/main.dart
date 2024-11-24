@@ -18,28 +18,6 @@ void main() async {
   runApp(App());
 }
 
-class App extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        backgroundColor: const Color.fromARGB(255, 11, 11, 11),
-        appBar: AppBar(title: Text('Zoomable & Pannable Container')),
-        body: Center(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(width: 20),
-              InteractiveContainer(),
-              SizedBox(width: 20),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class Pin {
   final String id;
   final GlobalKey key;
@@ -47,6 +25,7 @@ class Pin {
   String label;
   double width;
   double height;
+  bool isVisible;
 
   Pin({
     required this.id,
@@ -55,6 +34,7 @@ class Pin {
     required this.label,
     required this.width,
     required this.height,
+    this.isVisible = true,
   });
 
   Map<String, dynamic> toMap() {
@@ -62,6 +42,7 @@ class Pin {
       'label': label,
       'position': {'x': position.dx, 'y': position.dy},
       'timestamp': FieldValue.serverTimestamp(),
+      'isVisible': isVisible,
     };
   }
 
@@ -77,19 +58,137 @@ class Pin {
       label: data['label'] ?? '',
       width: 0.0,
       height: 0.0,
+      isVisible: data['isVisible'] ?? true,
     );
   }
 }
 
+class App extends StatefulWidget {
+  @override
+  _AppState createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  List<Pin> pins = [];
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        backgroundColor: const Color.fromARGB(255, 11, 11, 11),
+      
+        body: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                 width: 400,
+                height: 600,
+                decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 0, 0, 0),
+                            borderRadius: BorderRadius.circular(18)
+                          ),
+              ),
+              SizedBox(width: 20),
+              InteractiveContainer(
+                onPinsUpdated: (updatedPins) {
+                  setState(() {
+                    pins = updatedPins;
+                  });
+                },
+              ),
+              SizedBox(width: 20),
+              Container(
+                width: 400,
+                height: 600,
+                decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 0, 0, 0),
+                            borderRadius: BorderRadius.circular(18)
+                          ), 
+                child: SingleChildScrollView( // Make the list scrollable
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(30),
+                        child: Text("Places",style: TextStyle(fontSize: 30,color: const Color.fromARGB(255, 255, 255, 255),fontWeight: FontWeight.bold),),
+                      ), 
+                      for (var pin in pins) 
+                        Container(
+                          padding: EdgeInsets.only(top: 1,bottom: 1,left: 10,right: 10),
+                          child: Container(                          
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 10, 10, 10),
+                            borderRadius: BorderRadius.circular(10) 
+                          ),                      
+                          padding: EdgeInsets.only(top: 5,bottom: 5,left: 20,right: 20), 
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                pin.label,
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              IconButton(
+                                icon: Icon(
+                                  pin.isVisible
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                  color: pin.isVisible? Color.fromARGB(255, 214, 214, 214) : Colors.white,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    pin.isVisible = !pin.isVisible;
+                                  });
+                                  _updatePinVisibilityInFirestore(pin);
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                        )
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _updatePinVisibilityInFirestore(Pin pin) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('pins')
+          .doc(pin.id)
+          .update({'isVisible': pin.isVisible});
+    } catch (e) {
+      print('Error updating pin visibility: $e');
+    }
+  }
+}
+
 class InteractiveContainer extends StatefulWidget {
+  final Function(List<Pin>) onPinsUpdated;
+
+  InteractiveContainer({required this.onPinsUpdated});
+
   @override
   _InteractiveContainerState createState() => _InteractiveContainerState();
 }
 
 class _InteractiveContainerState extends State<InteractiveContainer> {
   double pointerPercentage = 0.0;
-  List<Pin> pins = [];
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  List<Pin> pins = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPinsFromFirestore();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +213,7 @@ class _InteractiveContainerState extends State<InteractiveContainer> {
         child: Container(
           decoration: BoxDecoration(
             color: Colors.black,
-            borderRadius: BorderRadius.circular(50),
+            borderRadius: BorderRadius.circular(18),
           ),
           width: 320,
           height: 600,
@@ -127,30 +226,31 @@ class _InteractiveContainerState extends State<InteractiveContainer> {
                 fit: BoxFit.fitHeight,
               ),
               for (var pin in pins)
-                Positioned(
-                  left: pin.position.dx - pin.width / 2,
-                  top: pin.position.dy - pin.height + 2,
-                  child: Container(
-                    key: pin.key,
-                    child: Column(
-                      children: [
-                        Text(
-                          pin.label,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            backgroundColor: Colors.black54,
+                if (pin.isVisible) // Only show visible pins
+                  Positioned(
+                    left: pin.position.dx - pin.width / 2,
+                    top: pin.position.dy - pin.height + 2,
+                    child: Container(
+                      key: pin.key,
+                      child: Column(
+                        children: [
+                          Text(
+                            pin.label,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              backgroundColor: Colors.black54,
+                            ),
                           ),
-                        ),
-                        Icon(
-                          Icons.location_pin,
-                          color: Colors.red,
-                          size: 20,
-                        ),
-                      ],
+                          Icon(
+                            Icons.location_pin,
+                            color: Colors.red,
+                            size: 20,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
             ],
           ),
         ),
@@ -194,11 +294,14 @@ class _InteractiveContainerState extends State<InteractiveContainer> {
       label: label,
       width: 0.0,
       height: 0.0,
+      isVisible: true, // Start as visible
     );
 
     setState(() {
       pins.add(newPin);
     });
+
+    widget.onPinsUpdated(pins); // Notify the parent widget
 
     _savePinToFirestore(newPin);
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -220,6 +323,7 @@ class _InteractiveContainerState extends State<InteractiveContainer> {
       setState(() {
         pins = querySnapshot.docs.map((doc) => Pin.fromFirestore(doc)).toList();
       });
+      widget.onPinsUpdated(pins); // Notify the parent widget
       WidgetsBinding.instance.addPostFrameCallback((_) {
         for (var pin in pins) {
           _updatePinDimensions(pin.key);
@@ -240,11 +344,5 @@ class _InteractiveContainerState extends State<InteractiveContainer> {
         pin.height = size.height;
       });
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _loadPinsFromFirestore();
   }
 }
