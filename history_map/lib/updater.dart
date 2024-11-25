@@ -396,15 +396,15 @@ class _InteractiveContainerState extends State<InteractiveContainer> {
             color: Colors.black,
             borderRadius: BorderRadius.circular(18),
           ),
-          width: 320,
+          width: 300,
           height: 600,
           child: Stack(
             children: [
               Image.asset(
-                'assets/map_image.png',
+                'assets/map_image.png', 
                 width: double.infinity,
                 height: double.infinity,
-                fit: BoxFit.fitHeight,
+                fit: BoxFit.fitHeight, 
               ),
               for (var pin in pins)
                 if (pin.isVisible)
