@@ -1,11 +1,13 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:history_map/game.dart';
+import 'package:history_map/viewer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
+  await Firebase.initializeApp( 
     options: FirebaseOptions(
       apiKey: "AIzaSyB_TbwLrkbVfS4dvrlWLAwZTmdtZEBa4ko",
       authDomain: "historymap-f4e49.firebaseapp.com",
@@ -16,54 +18,18 @@ void main() async {
       measurementId: "G-ELRTJMMGKN",
     ),
   );
-  runApp(App());
+  runApp(MyApp());
 }
 
-class Pin {
-  final String id;
-  final GlobalKey key;
-  final Offset position;
-  String label;
-  double width;
-  double height;
-  bool isVisible;
-
-  Pin({
-    required this.id,
-    required this.key,
-    required this.position,
-    required this.label,
-    required this.width,
-    required this.height,
-    this.isVisible = true,
-  });
-
-  Map<String, dynamic> toMap() {
-    return {
-      'label': label,
-      'position': {'x': position.dx, 'y': position.dy},
-      'timestamp': FieldValue.serverTimestamp(),
-      'isVisible': isVisible,
-    };
-  }
-
-  factory Pin.fromFirestore(DocumentSnapshot doc) {
-    Map data = doc.data() as Map;
-    return Pin(
-      id: doc.id,
-      key: GlobalKey(),
-      position: Offset(
-        data['position']['x']?.toDouble() ?? 0.0,
-        data['position']['y']?.toDouble() ?? 0.0,
-      ),
-      label: data['label'] ?? '',
-      width: 0.0,
-      height: 0.0,
-      isVisible: data['isVisible'] ?? true,
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: MainPage(),
     );
   }
 }
-
 void _launchURL() async {
   const url = 'https://github.com/afthab123456'; // Replace with your GitHub URL
   if (await canLaunch(url)) {
@@ -72,209 +38,264 @@ void _launchURL() async {
     throw 'Could not launch $url';
   }
 }
-
-class App extends StatefulWidget {
-  @override
-  _AppState createState() => _AppState();
-}
-
-class _AppState extends State<App> {
-  List<Pin> pins = [];
-  bool isMenu = false;
-  @override  
-  Widget build(BuildContext context) {
-      double screenHeight = MediaQuery.of(context).size.height;
-      double screenWidth = MediaQuery.of(context).size.width;
-    return MaterialApp(
-      home: Scaffold(
-        backgroundColor: const Color.fromARGB(255, 11, 11, 11),
-        body:
-              
-              InteractiveContainer(
-                screenHeight: screenHeight,
-                screenWidth: screenWidth,
-                onPinsUpdated: (updatedPins) {
-                  setState(() {
-                    pins = updatedPins;
-                  });
-                },
-            
-        
-        
-          ),
-      )); 
-    
-  }
-
-  Future<void> _updatePinVisibilityInFirestore(Pin pin) async {
-    try {
-      await FirebaseFirestore.instance.collection('pins').doc(pin.id).update({'isVisible': pin.isVisible});
-    } catch (e) {
-      print('Error updating pin visibility: $e');
-    }
-  }
-}
-
-class InteractiveContainer extends StatefulWidget {
-  final Function(List<Pin>) onPinsUpdated;  
-  final double screenHeight;
-  final double screenWidth;
-  InteractiveContainer({required this.onPinsUpdated,required this.screenHeight,required this.screenWidth});
-
-  @override
-  _InteractiveContainerState createState() => _InteractiveContainerState();
-}
-
-class _InteractiveContainerState extends State<InteractiveContainer> {
-  double pointerPercentage = 0.0;
-  final FirebaseFirestore firestore = FirebaseFirestore.instance;
-  List<Pin> pins = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _loadPinsFromFirestore();
-  }
-
+class MainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    bool isProperRatio = true;
-    if (widget.screenHeight/2 > widget.screenWidth){
-      setState(() {
-        isProperRatio = false;
-      });
-    }
-    double scaleY = widget.screenHeight / 600;
-    double scaleX = widget.screenHeight / 2 / 300;
-    double driftX = (widget.screenWidth - (widget.screenHeight / 2))/2;
-
-    double driftY = (widget.screenHeight - (widget.screenWidth*2))/2;
-    
-    return InteractiveViewer(
-      minScale: 1,
-      maxScale: 5.0,
-      
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.black,
-            borderRadius: BorderRadius.circular(18),
-          ),
-          width: widget.screenWidth,
-          height: widget.screenHeight,
-          child: Stack(
-            children: [  
-              Image.asset(
-                'assets/map_image.png', 
-                width: double.infinity,
-                height: double.infinity,
-                fit: isProperRatio ? BoxFit.fitHeight : BoxFit.fitWidth, 
-              ),
-              for (var pin in pins)
-                if (pin.isVisible)
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              height: MediaQuery.of(context).size.height,
+              child: Stack(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(color: Color(0xFF20242a)),
+                      ),
+                      Expanded(
+                        child: Container(color: screenWidth > 500 ? Color(0xFF2b3038) :Color(0xFF20242a)),
+                      ),
+                    ],
+                  ),
                   Positioned(
-                    left: (pin.position.dx * scaleX) + (isProperRatio ? driftX : 0) - pin.width / 2,
-                    top: pin.position.dy * scaleY + (!isProperRatio ? driftY: 0)- pin.height + 2,
-                    child: Container(
-                      key: pin.key,
+                    left: screenWidth > 500 ? screenWidth / 2 : 0,
+                    top: 30,
+                    child: Text(
+                      'Map\nMarking'.toUpperCase(),
+                      style: GoogleFonts.archivoBlack(
+                        textStyle: TextStyle(
+                          color: screenWidth > 500 ? Color(0xFF272c34) : const Color.fromARGB(255, 30, 53, 55),
+                          fontSize: screenWidth > 500 ? 100 : 80, 
+                          height: 1,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Center(
+                    child: Image.asset(
+                      "assets/landing_map.png",
+                      height: MediaQuery.of(context).size.height,
+                    ),
+                  ),
+                  if (screenWidth > 500)
+                  Positioned(
+                    top: -180,
+                    right: -180, 
+                    child: Image.asset('assets/green_circle.png',height: 380,),
+                  ),
+                  
+                  if (screenWidth < 1000)
+                  Container(width: screenWidth,height: screenHeight,color: const Color.fromARGB(165, 0, 0, 0),),
+                  if (screenWidth > 500) 
+                  Positioned(
+                    top: 50,
+                    left: screenWidth > 500 ? 50 : 30,
+                    child: Icon(Icons.location_pin, size: 50, color: Color.fromARGB(255, 204, 20, 20)),
+                  ),
+                  
+                  if (screenWidth < 500)
+                    Center(
                       child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                          Icon(Icons.location_pin, size: 50, color: Color.fromARGB(255, 204, 20, 20)),
                           Text(
-                            pin.label,
-                            style: TextStyle(color: Colors.white, fontSize: 12, backgroundColor: Colors.black54),
+                            'Map\nMarking'.toUpperCase(),
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.poppins(                               
+                              textStyle: TextStyle(
+                                fontSize: 40,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFFc7e3da),
+                                fontStyle: FontStyle.italic,
+                                height: 1.2,
+                              ),
+                            ),
                           ),
-                          Icon(Icons.location_pin, color: Colors.red, size: 20),
+                          GestureDetector(
+                            onTap:() { 
+                              _launchURL;
+                            },
+                            child: Container(
+                              width:  250,
+                              height: 40,     
+                              margin: EdgeInsets.only(top: 20),                        
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: Color.fromARGB(204, 18, 44, 36),
+                                borderRadius: BorderRadius.circular(12)
+                              ),
+                              child: Text('Developed by @Afthab Ahamed'.toUpperCase(),style:TextStyle(fontSize: 13,color: Colors.white),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ), 
+                   
+                  if (screenWidth > 500)
+                  Positioned(
+                    top: 100,
+                    left:  60, 
+                    child: Text(
+                      'Map\nMarking'.toUpperCase(),
+                      style: GoogleFonts.poppins( 
+                        textStyle: TextStyle(
+                          fontSize: screenWidth > 500 ? 55 : 40,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFFc7e3da),
+                          fontStyle: FontStyle.italic,
+                          height: 1.2,
+                        ),
+                      ),
+                    ),
+                  ),
+                  if (screenWidth > 500)
+                  Positioned( 
+                    bottom: 180,
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Stack(
+                            alignment: Alignment.center,
+                            clipBehavior: Clip.none,
+                            children: [
+                              Container( 
+                                width: screenWidth > 1000 ? 200 : 150,
+                                height: screenWidth > 1000 ? 130 : 100,                               
+                                decoration: BoxDecoration(
+                                  color: Color(0xff2b3038),
+                                  borderRadius: BorderRadius.only(topRight: Radius.circular(25),bottomRight: Radius.circular(25))
+                                ),
+                                alignment: Alignment.center,
+                              ),
+                              Positioned(
+                                right: screenWidth > 1000 ? -100 : -50,
+                                child: Text(
+                                  'making your\nol exams easy'.toUpperCase(),
+                                  textAlign: TextAlign.left,
+                                  style: GoogleFonts.poppins(textStyle: TextStyle(fontSize: screenWidth > 1000 ? 25 : 18, color: Colors.white)),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Stack(
+                            clipBehavior: Clip.none,
+                            alignment: Alignment.center,
+                            children: [
+                              Container(
+                                width: screenWidth > 1000 ? 280 : 180,
+                                height: screenWidth > 1000 ? 130 : 100,                                
+                                decoration: BoxDecoration(
+                                  color: Color(0xff20242a),
+                                  borderRadius: BorderRadius.only(topLeft: Radius.circular(25),bottomLeft: Radius.circular(25))
+                                ),
+                                alignment: Alignment.center,
+                              ),
+                              Positioned(
+                                left: screenWidth > 1000 ? -80 : -40, 
+                                child: Text(
+                                  'Start Your\nLearning Journey'.toUpperCase(),
+                                  textAlign: TextAlign.left,
+                                  style: GoogleFonts.poppins(textStyle: TextStyle(fontSize: screenWidth > 1000 ? 25 : 18, color: Colors.white)),
+                                ),
+                              ),
+                              Positioned(
+                                right: screenWidth > 1000 ? 30 : 15, 
+                                child: Icon(Icons.arrow_downward_rounded,color: Color(0xff38876f),size: screenWidth > 1000 ? 50 : 25,)
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ),
                   ),
+
+                  if (screenWidth > 500)
+                  Positioned(
+                    bottom: 50,
+                    child:  Stack(
+                            clipBehavior: Clip.none,
+                            alignment: Alignment.center,
+                            children: [
+                              Container(
+                                width:  200,
+                                height: 40,                             
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  color: Color(0xff38876f),
+                                  borderRadius: BorderRadius.only(topRight:Radius.circular(25),bottomRight: Radius.circular(25))
+                                ),
+                              ),
+                              Positioned(
+                                 right: 1,
+                                child: Text(
+                                  'Developed by  '.toUpperCase(),
+                                  textAlign: TextAlign.left,
+                                  style: GoogleFonts.poppins(textStyle: TextStyle(fontSize: 15, color: Colors.white)),
+                                ),
+                              ),
+                              Positioned(
+                                left: 205,
+                                child:  Text('@Afthab Ahamed',style:TextStyle(fontSize: 16,color: Colors.white),)
+                              ),   
+                             
+                            ],
+                          ),
+                         ),
+                         Positioned(
+                          bottom: 50,
+                          child: GestureDetector(onTap: () {
+                           print('object');
+                         }, child: Container(width: 350,height: 40,color: const Color.fromARGB(0, 255, 255, 255),),))
+                        
+                                                
+                ],
+              ), 
+            ),
+           Container(height: screenHeight,width: screenWidth,child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              
+               Text('this page is just a test one, this is not how the actuall website will look',textAlign: TextAlign.center,),
+               
+              SizedBox(height: 20,), 
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                Text('View Map'),
+                SizedBox(width: 20,),
+                ElevatedButton(onPressed: (){
+                  Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ViewerApp()),
+            );
+                }, child: Text('View Map'))
+              ],),
+              SizedBox(height: 20,), 
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                Text('Play Game'),                
+                SizedBox(width: 20,),
+                ElevatedButton(onPressed: (){
+                  Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => GameApp()),
+            );
+                }, child: Text('Play Game'))
+              ],)
             ],
-          ),
-        ),
-      
-    );
-  }
-
-  Future<String?> _getLabelFromUser(BuildContext context) async {
-    TextEditingController controller = TextEditingController();
-    return showDialog<String>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text("Enter Pin Label"),
-          content: TextField(controller: controller),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(context, controller.text),
-              child: Text('OK'),
-            ),
+           ),)
           ],
-        );
-      },
+        ),
+      ),
     );
-  }
-
-  void _addPin(Offset position, String label) {
-    String pinId = DateTime.now().millisecondsSinceEpoch.toString();
-    GlobalKey pinKey = GlobalKey();
-    Pin newPin = Pin(
-      id: pinId,
-      key: pinKey,
-      position: position,
-      label: label,
-      width: 0.0,
-      height: 0.0,
-      isVisible: true,
-    );
-
-    setState(() {
-      pins.add(newPin);
-    });
-
-    widget.onPinsUpdated(pins);
-    _savePinToFirestore(newPin);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _updatePinDimensions(pinKey);
-    });
-  }
-
-  Future<void> _savePinToFirestore(Pin pin) async {
-    try {
-      await firestore.collection('pins').add(pin.toMap());
-    } catch (e) {
-      print('Error saving pin: $e');
-    }
-  }
-
-  void _loadPinsFromFirestore() async {
-    try {
-      QuerySnapshot querySnapshot = await firestore.collection('pins').get();
-      setState(() {
-        pins = querySnapshot.docs.map((doc) => Pin.fromFirestore(doc)).toList();
-      });
-      widget.onPinsUpdated(pins);
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        for (var pin in pins) {
-          _updatePinDimensions(pin.key);
-        }
-      });
-    } catch (e) {
-      print('Error loading pins: $e');
-    }
-  }
-
-  void _updatePinDimensions(GlobalKey pinKey) {
-    final renderBox = pinKey.currentContext?.findRenderObject() as RenderBox?;
-    if (renderBox != null) {
-      final size = renderBox.size;
-      setState(() {
-        final pin = pins.firstWhere((pin) => pin.key == pinKey);
-        pin.width = size.width;
-        pin.height = size.height;
-      });
-    }
   }
 }
