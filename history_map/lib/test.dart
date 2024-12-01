@@ -1,25 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:MapMarking/game.dart';
+import 'package:MapMarking/main.dart';
 
-void main() {
-  runApp(GameOptionsApp());
-}
 
-class GameOptionsApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Game Options',
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        primaryColor: const Color.fromARGB(255, 67, 6, 6),
-        scaffoldBackgroundColor: const Color(0xFF20242a),
-      ),
-      home: GameOptionsPage(),
-    );
-  }
-}
 
 class GameOptionsPage extends StatefulWidget {
   @override
@@ -27,10 +11,10 @@ class GameOptionsPage extends StatefulWidget {
 }
 
 class _GameOptionsPageState extends State<GameOptionsPage> {
-  String? selectedMap;
-  String? selectedDifficulty;
-  String? selectedPlaces;
-  String? selectedLanguage;
+  String? selectedMap = "Srilanka - Places"; // Default value
+  String? selectedDifficulty = "Easy"; // Default value
+  String? selectedPlaces = "5"; // Default value
+  String? selectedLanguage = "Tamil"; // Default value
 
   bool isStartGamePressed = false;
 
@@ -69,10 +53,12 @@ class _GameOptionsPageState extends State<GameOptionsPage> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height; 
     return Scaffold(
       body: Stack(
         children: [
-          // Background Containers
+          Container(width: screenWidth,height: screenHeight,color: const Color(0xFF20242a),), 
           Positioned( 
             top: 0,
             left: 0,
@@ -89,7 +75,7 @@ class _GameOptionsPageState extends State<GameOptionsPage> {
               child: Image.asset("assets/dots.png"), 
             ),
           ),
-          
+          Container(width: screenWidth,height: screenHeight,color: const Color.fromARGB(165, 0, 0, 0),),
           // Main Form
           Center(
             child: SingleChildScrollView(
@@ -102,7 +88,7 @@ class _GameOptionsPageState extends State<GameOptionsPage> {
                     margin: EdgeInsets.symmetric(horizontal: 20),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      color: Color(0xFF2b3038),
+                      color: Color.fromARGB(255, 19, 21, 24),
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
@@ -134,28 +120,28 @@ class _GameOptionsPageState extends State<GameOptionsPage> {
                           SizedBox(height: 20),
                           DropdownTile(
                             title: "Select Map",
-                            options: ["Map 1", "Map 2", "Map 3"],
+                            options: ["Srilanka - Places"],
                             selectedValue: selectedMap,
                             onChanged: (value) => setState(() => selectedMap = value),
                             isStartGamePressed: isStartGamePressed,
                           ),
                           DropdownTile(
                             title: "Difficulty",
-                            options: ["Easy", "Medium", "Hard"],
+                            options: ["Easy", "Medium", "Hard", "Impossible"],
                             selectedValue: selectedDifficulty,
                             onChanged: (value) => setState(() => selectedDifficulty = value),
                             isStartGamePressed: isStartGamePressed,
                           ),
                           DropdownTile(
                             title: "Number of Places",
-                            options: ["5", "10", "15"],
+                            options: ["5", "10", "15","30"],
                             selectedValue: selectedPlaces,
                             onChanged: (value) => setState(() => selectedPlaces = value),
                             isStartGamePressed: isStartGamePressed,
                           ),
                           DropdownTile(
                             title: "Language",
-                            options: ["English", "Spanish", "French"],
+                            options: ["Tamil", "Sinhala", "English"],
                             selectedValue: selectedLanguage,
                             onChanged: (value) => setState(() => selectedLanguage = value),
                             isStartGamePressed: isStartGamePressed,
@@ -166,17 +152,22 @@ class _GameOptionsPageState extends State<GameOptionsPage> {
                             children: [
                               ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Color(0xFF20242a),
+                                  backgroundColor: Color.fromARGB(255, 29, 34, 40),
                                   foregroundColor: Colors.white,
                                   shadowColor: Colors.black,
                                 ),
-                                onPressed: () {},
-                                child: Icon(Icons.home_rounded),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => MainPage()),
+                                  );
+                                },
+                                child: Icon(Icons.home_rounded,size: 18,color: Color(0xFFc7e3da),), 
                               ),
                               SizedBox(width: 10),
                               ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Color(0xFF20242a),
+                                  backgroundColor: Color.fromARGB(255, 29, 34, 40),
                                   foregroundColor: Colors.white,
                                   shadowColor: Colors.black,
                                 ),
@@ -185,9 +176,22 @@ class _GameOptionsPageState extends State<GameOptionsPage> {
                                     isStartGamePressed = true;
                                   });
 
+
                                   if (areAllOptionsSelected()) {
-                                    showPopup();
+                                    // Navigate to GameApp
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => GameApp(
+                                          Language: selectedLanguage!,
+                                          Map: selectedMap!,
+                                          level: selectedDifficulty!,
+                                          numOfPlaces: int.parse(selectedPlaces!),
+                                        ),
+                                      ),
+                                    );
                                   } else {
+                                    // Show Snackbar if options are incomplete
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: Center(
@@ -196,13 +200,20 @@ class _GameOptionsPageState extends State<GameOptionsPage> {
                                             style: TextStyle(color: Colors.white),
                                           ),
                                         ),
-                                        backgroundColor: Color.fromARGB(255, 62, 70, 81),
+                                        backgroundColor: Color.fromARGB(255, 16, 18, 21),
                                       ),
                                     );
                                   }
                                 },
-                                child: Text('Start Game'),
+                                child: Text('Start Game',style: GoogleFonts.play( 
+                                    textStyle: TextStyle(
+                                      fontSize: 15, 
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFFc7e3da),
+                                      height: 1.2,
+                                    ),))
                               ),
+
                             ],
                           ),
                         ],
@@ -245,14 +256,20 @@ class DropdownTile extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 8.0),
             child: Text(
               title,
-              style: TextStyle(color: Colors.white, fontSize: 16),
+              style: GoogleFonts.play( 
+                                    textStyle: TextStyle(
+                                      fontSize: 15, 
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFFc7e3da),
+                                      height: 1.2,
+                                    )) 
             ),
           ),
           Center(
             child: Container(
               width: 400,
               decoration: BoxDecoration(
-                color: Color(0xFF20242a),
+                color: Color.fromARGB(255, 13, 15, 18),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
                   color: isStartGamePressed && selectedValue == null
@@ -263,17 +280,29 @@ class DropdownTile extends StatelessWidget {
               ),
               padding: EdgeInsets.symmetric(horizontal: 12),
               child: DropdownButton<String>(
-                dropdownColor: Color(0xFF20242a),
+                dropdownColor: Color.fromARGB(255, 13, 15, 18),
                 value: selectedValue,
-                hint: Text("Select", style: TextStyle(color: Colors.white)),
+                hint: Text("Select", style: GoogleFonts.play( 
+                                    textStyle: TextStyle(
+                                      fontSize: 15, 
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFFc7e3da),
+                                      height: 1.2,
+                                    )),), 
                 isExpanded: true,
                 icon: Icon(Icons.arrow_drop_down, color: Colors.white),
                 items: options
                     .map((option) => DropdownMenuItem<String>(
                           value: option,
-                          child: Text(option, style: TextStyle(color: Colors.white)),
+                          child: Text(option, style: GoogleFonts.play( 
+                                    textStyle: TextStyle(
+                                      fontSize: 15, 
+                                      fontWeight: FontWeight.bold,
+                                      color: Color.fromARGB(255, 255, 255, 255),
+                                      height: 1.2,
+                                    ),)),
                         ))
-                    .toList(),
+                    .toList(), 
                 onChanged: onChanged,
                 underline: SizedBox(),
               ),

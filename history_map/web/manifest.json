@@ -1,6 +1,6 @@
 {
-    "name": "history_map",
-    "short_name": "history_map",
+    "name": "MapMarking",
+    "short_name": "MapMarking",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

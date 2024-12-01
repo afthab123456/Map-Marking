@@ -1,4 +1,4 @@
-package com.example.history_map
+package com.example.MapMarking
 
 import io.flutter.embedding.android.FlutterActivity
 
