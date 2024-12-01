@@ -3,8 +3,10 @@ import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:history_map/main.dart';
-import 'package:history_map/widgets/pin.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:MapMarking/main.dart';
+import 'package:MapMarking/marking_popup.dart';
+import 'package:MapMarking/widgets/pin.dart';
 
 
 
@@ -16,12 +18,29 @@ class ViewerApp extends StatefulWidget {
 class _ViewerAppState extends State<ViewerApp> {
   List<Pin> pins = [];
   bool isMenu = false;
-  bool isSettings = true;
+  bool isSettings = false;
+  bool islanguageSelect = true;
+  String selectedLanguage = 'Tamil';
   void toggleVisibility(int index) {
     setState(() {
       pins[index].isVisible = !pins[index].isVisible;
     });
   }
+  void hideAllPins(List<Pin> pins) {
+  for (var pin in pins) {
+    setState(() {
+      pin.isVisible = false;
+    });
+  }
+}
+void showAllPins(List<Pin> pins) {
+  for (var pin in pins) {
+    setState(() {
+      pin.isVisible = true; 
+    });
+  }
+}
+
   void updateVisibilityAll(List<Pin> pins, bool isVisible) {
   for (var pin in pins) {
     pin.isVisible = isVisible;
@@ -43,13 +62,14 @@ class _ViewerAppState extends State<ViewerApp> {
                 onPinsUpdated: (updatedPins) {
                   setState(() {
                     pins = updatedPins;
-                  });
+                  });                
                 },
+                selectedLanguage: selectedLanguage,
             
         
         
           ), 
-          if (!isSettings)
+          if (!isSettings&&!islanguageSelect) 
             Positioned(
                       top: 20,
                       left: 20,
@@ -62,7 +82,7 @@ class _ViewerAppState extends State<ViewerApp> {
               context,
               MaterialPageRoute(builder: (context) => MainPage()),
             );}, child: Icon(Icons.arrow_back_ios_new_rounded ))),
-            if(!isSettings)
+            if(!isSettings&&!islanguageSelect)
             Positioned(
                       top: 20,
                       right: 20,
@@ -74,108 +94,222 @@ class _ViewerAppState extends State<ViewerApp> {
                         onPressed:() {setState(() {
                                   isSettings = true;
                                 });}, child: Icon(Icons.settings_rounded ))),
-              isSettings ? Center(child: 
-            Stack(children: [
-              ClipRRect(
-                  borderRadius: const BorderRadius.all(Radius.circular(25)),
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30), 
-                    child: Container(
-                      width: 550,                       
-                      height: screenHeight - 50,
-                      padding: screenWidth > 355 ? EdgeInsets.all(50) : EdgeInsets.all(25),
-                      margin: EdgeInsets.only(left: 20,right: 20),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.withOpacity(0.1),
-                        borderRadius: const BorderRadius.all(Radius.circular(25)),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center, 
-                        crossAxisAlignment: CrossAxisAlignment.start,  
-                        children: [
-                          
-                          Text("Map Settings",style: TextStyle(color: Colors.white,fontSize: 20,)),
-                          SizedBox(height: 30,),
-                          Text('Language',style: TextStyle(color: Colors.white,fontSize: 15,)),
-                          SizedBox(height: 15,),
-                          Wrap(children: [                            
-                            OutlinedButton(onPressed: (){}, child: Text('Tamil',style: TextStyle(color: Colors.white,fontSize: 12,))),
-                            SizedBox(width: 10,), 
-                            OutlinedButton(onPressed: (){}, child: Text('Sinhala',style: TextStyle(color: Colors.white,fontSize: 12,))),
-                            SizedBox(width: 10,), 
-                            OutlinedButton(onPressed: (){}, child: Text('English',style: TextStyle(color: Colors.white,fontSize: 12,))),
-                          ],), 
-                          SizedBox(height: 20,),
-                          Text('Pin Visibility',style: TextStyle(color: Colors.white,fontSize: 15,)),
-                          SizedBox(height: 15,), 
-                          Row(children: [                            
-                            OutlinedButton(onPressed: (){}, child: Row(children: [Text('Show All',style: TextStyle(color: Colors.white,fontSize: 12,)),SizedBox(width: 10,) ,Icon(Icons.visibility,size: 18,color: Colors.white,) ],)
-                            ),
-                            SizedBox(width: 10,), 
-                            OutlinedButton(onPressed: (){}, child: Row(children: [Text('Hide All',style: TextStyle(color: Colors.white,fontSize: 12,)),SizedBox(width: 10,) ,Icon(Icons.visibility_off,size: 18,color: Colors.white,) ],)
-                            ), 
-                          ],),
-                          SizedBox(height: 10,), 
-                          Expanded(child: 
-                          Container(
-            // Fixed height for the scrollable list
-          
-          
-          child: ListView.builder(
-            itemCount: pins.length, // Use the pins list for the length
-            itemBuilder: (context, index) {
-              return Container(
-  padding: EdgeInsets.symmetric(horizontal: 25.0, vertical: 2.0),
-  decoration: BoxDecoration( 
-    borderRadius: BorderRadius.circular(25), 
-    border: Border.all(color: const Color.fromARGB(143, 220, 158, 254),width: 1)
-  ),
-  child: Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              isSettings ? Center(
+  child: Stack(
     children: [
-      Text(
-        pins[index].label,
-        style: TextStyle(fontSize: 13.0,color: Colors.white),
-      ),
-      IconButton(
-        icon: Icon(
-          pins[index].isVisible ? Icons.visibility : Icons.visibility_off,
-          color: pins[index].isVisible ? const Color.fromARGB(255, 255, 255, 255) : const Color.fromARGB(255, 196, 196, 196),
+      
+      Container(
+        width: 550,
+        height: screenHeight - 50,
+        padding: screenWidth > 355 ? EdgeInsets.all(50) : EdgeInsets.all(25),
+        margin: EdgeInsets.symmetric(horizontal: 20),
+        decoration: BoxDecoration(
+          color: Color.fromARGB(255, 19, 21, 24), // Plain background color
+          borderRadius: BorderRadius.all(Radius.circular(25)),
         ),
-        onPressed: () => toggleVisibility(index), // Toggle visibility
-      ),
-    ],
-  ),
-);
- 
-            },
-          ))) 
-                        ],
-                      ) 
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            
+            Text("Map Settings", style: GoogleFonts.play( 
+                                    textStyle: TextStyle(
+                                      fontSize: 20,  
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFFc7e3da),
+                                      height: 1.2,
+                                    ),
+                                  )),
+            SizedBox(height: 30),
+            Text('Language', style: GoogleFonts.play( 
+                                    textStyle: TextStyle(
+                                      fontSize: 15, 
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFFc7e3da),
+                                      height: 1.2,
+                                    ),
+                                  )),
+            SizedBox(height: 15),
+            Wrap(
+              alignment: WrapAlignment.spaceBetween,  
+              children: ['Tamil', 'Sinhala', 'English'].map((language) {
+                bool isSelected = selectedLanguage == language; // Track selection
+                return Padding(
+                  padding: const EdgeInsets.only(right: 10.0,top: 10),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: isSelected ? Color.fromARGB(255, 34, 39, 46) : Color.fromARGB(255, 13, 15, 18),
+                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    ),
+                    onPressed: () async {
+                      setState(() {
+                        selectedLanguage = language; // Update selected language
+                      });
+                      await Future.delayed(Duration(seconds: 1));
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+        for (var pin in pins) {
+          _updatePinDimensions(pin.key);
+        }
+      });  
+                    },
+                    child: Text(
+                      language,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                      ),
                     ),
                   ),
+                );
+              }).toList(),
+            ),
+            SizedBox(height: 20),
+            Text('Pin Visibility', style: GoogleFonts.play( 
+                                    textStyle: TextStyle(
+                                      fontSize: 15, 
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFFc7e3da),
+                                      height: 1.2,
+                                    ),
+                                  )),
+            SizedBox(height: 15),
+            Row(
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () {showAllPins(pins);}, 
+                  icon: Icon(Icons.visibility, size: 18, color: Colors.white),
+                  label: Text('Show All', style: TextStyle(color: Colors.white, fontSize: 12)),
+                  style: ElevatedButton.styleFrom(backgroundColor: Color.fromARGB(255, 13, 15, 18)),
                 ),
-          Positioned(
-                            right: 50,
-                            top: 25,
+                SizedBox(width: 10),
+                ElevatedButton.icon(
+                  onPressed: () {hideAllPins(pins);},
+                  icon: Icon(Icons.visibility_off, size: 18, color: Colors.white),
+                  label: Text('Hide All', style: TextStyle(color: Colors.white, fontSize: 12)),
+                  style: ElevatedButton.styleFrom(backgroundColor: Color.fromARGB(255, 13, 15, 18)),
+                ),
+              ],
+            ),
+            SizedBox(height: 10),
+            Expanded(
+  child: ScrollConfiguration(
+    behavior: ScrollBehavior().copyWith(overscroll: false, scrollbars: false),
+    child: ListView.builder(
+      itemCount: pins.length,
+      itemBuilder: (context, index) {
+        return Container(
+          margin: EdgeInsets.symmetric(vertical: 5),
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          decoration: BoxDecoration(
+            color: Color.fromARGB(255, 13, 15, 18),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                ((selectedLanguage == "Tamil" ? pins[index].labelT: selectedLanguage == "Sinhala" ? pins[index].labelS : pins[index].labelE)),
+                
+                style: TextStyle(fontSize: 13.0, color: Colors.white),
+              ), 
+              IconButton(
+                icon: Icon(
+                  pins[index].isVisible ? Icons.visibility : Icons.visibility_off,
+                  color: pins[index].isVisible ? Colors.white : Colors.grey,
+                ),
+                onPressed: () => toggleVisibility(index),
+              ),
+            ],
+          ),
+        );
+      },
+    ),
+  ),
+) 
+],
+        ),
+      ),
+      Positioned(
+        right: 40, 
+        top: 20, 
+        child: CloseButton(onPressed: (){setState(() {
+          isSettings = false; 
+        });},color: Colors.white,), )   
 
-                            child: GestureDetector(
-                              onTap: () {
-                                print('object'); 
-                                setState(() {
-                                  isSettings = false;
-                                });
-                              },
-                              child: Icon(Icons.close_rounded,color: Colors.white,),
-                            )),
-  ])):SizedBox()                
-             ],)
-        )  
-              
-      ); 
+    ],
+  ),
+):SizedBox(),
+ if(islanguageSelect) Center(
+  child: Container(
+    height: 250, 
+    width: 200, 
+    decoration: BoxDecoration(
+      color:Color.fromARGB(255, 19, 21, 24),
+      borderRadius: BorderRadius.circular(20) 
+    ), 
+    padding: EdgeInsets.all(20),
+    child: Column(
+      children: [
+        Text('Select Language', style: GoogleFonts.play( 
+                                    textStyle: TextStyle(
+                                      fontSize: 18, 
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFFc7e3da),
+                                      height: 1.2,
+                                    ),
+                                  )),
+                                  SizedBox(height: 20,), 
+         Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,   
+              children: ['Tamil', 'Sinhala', 'English'].map((language) {
+                bool isSelected = selectedLanguage == language; // Track selection
+                return Padding(
+                  padding: const EdgeInsets.only(right: 10.0,top: 3), 
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor:  Color.fromARGB(255, 13, 15, 18), 
+                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    ),
+                    onPressed: () async {
+                      setState(() {
+                        selectedLanguage = language; // Update selected language
+                      });
+                       setState(() {
+          islanguageSelect = false; 
+        });
+                      await Future.delayed(Duration(seconds: 1)); 
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+        for (var pin in pins) {
+          _updatePinDimensions(pin.key);
+        }
+       
+      }); 
+                    },
+                    child: Text(
+                      language,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+           
+      ],
+    ),
+  ),
+ )
+])));
+
+   
+ 
     
   }
-
+  
+  
   Future<void> _updatePinVisibilityInFirestore(Pin pin) async {
     try {
       await FirebaseFirestore.instance.collection('pins').doc(pin.id).update({'isVisible': pin.isVisible});
@@ -183,13 +317,25 @@ class _ViewerAppState extends State<ViewerApp> {
       print('Error updating pin visibility: $e');
     }
   }
+  void _updatePinDimensions(GlobalKey pinKey) {
+    final renderBox = pinKey.currentContext?.findRenderObject() as RenderBox?;
+    if (renderBox != null) {
+      final size = renderBox.size;
+      setState(() {
+        final pin = pins.firstWhere((pin) => pin.key == pinKey);
+        pin.width = size.width;
+        pin.height = size.height;
+      });
+    }
+  } 
 }
 
 class InteractiveContainer extends StatefulWidget {
   final Function(List<Pin>) onPinsUpdated;  
   final double screenHeight;
   final double screenWidth;
-  InteractiveContainer({required this.onPinsUpdated,required this.screenHeight,required this.screenWidth});
+  final String selectedLanguage;
+  InteractiveContainer({required this.onPinsUpdated,required this.screenHeight,required this.screenWidth,required this.selectedLanguage});
 
   @override
   _InteractiveContainerState createState() => _InteractiveContainerState();
@@ -200,11 +346,14 @@ class _InteractiveContainerState extends State<InteractiveContainer> {
   final GlobalKey containerKey = GlobalKey(); // Key for the container
   List<Pin> pins = [];
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  //remove 
+  int tindex = 0; 
 
   @override
   void initState() {
     super.initState();
     _loadPinsFromFirestore();
+    
   }
 
   @override
@@ -213,20 +362,25 @@ class _InteractiveContainerState extends State<InteractiveContainer> {
     if (widget.screenHeight / 2 > widget.screenWidth) {
       isProperRatio = false;
     }
-    double scaleY = widget.screenHeight / 600;
-    double scaleX = widget.screenHeight / 2 / 300;
+    double scaleY = isProperRatio ? widget.screenHeight / 600: (widget.screenWidth*2)/600;
+    double scaleX = isProperRatio ? widget.screenHeight / 2 / 300 : (widget.screenWidth)/300;
     double driftX = (widget.screenWidth - (widget.screenHeight / 2)) / 2;
-    double driftY = (widget.screenHeight - (widget.screenWidth * 2)) / 2;
+    double driftY = (widget.screenHeight - (widget.screenWidth * 2)) / 2; 
 
     return GestureDetector(
-      onTapDown: (details) {
-        final renderBox =
+      onDoubleTapDown: (details) async {
+        final renderBox = 
             containerKey.currentContext?.findRenderObject() as RenderBox?;
         if (renderBox != null) {clickPosition = renderBox.globalToLocal(details.globalPosition);
           double px = ((clickPosition.dx)-(isProperRatio ? driftX : 0))/scaleX; 
           double py = ((clickPosition.dy)-(!isProperRatio ? driftY : 0))/scaleY;
-          //_addPin(Offset(px, py), 'teeees');
+          final label = await showLabelInputDialog(context);
+          if (label != null && label.isNotEmpty) {
+            print('Entered Label: $label');
+            _addPin(Offset(px, py), label,'sinhala$tindex','english$tindex');
+          }
           
+          tindex ++; 
         }
       },
       child: MouseRegion(
@@ -244,11 +398,11 @@ class _InteractiveContainerState extends State<InteractiveContainer> {
                                 
             InteractiveViewer(
               minScale: 1,
-              maxScale: 5.0,
+              maxScale: 8.0,
               child: Container(
                 key: containerKey,
                 decoration: BoxDecoration(
-                  color: Color(0xFF20242a),
+                  color: Color.fromARGB(255, 10, 12, 13),
                 ),
                 width: widget.screenWidth,
                 height: widget.screenHeight,
@@ -269,28 +423,28 @@ class _InteractiveContainerState extends State<InteractiveContainer> {
                           top: pin.position.dy * scaleY +
                               (!isProperRatio ? driftY : 0) -
                               pin.height +
-                              2,
+                              2, 
                           child: Container(
                             key: pin.key,
                             child: Column(
                               children: [
                                 Container(
                                   decoration: BoxDecoration(
-                                    color: Color.fromARGB(255, 47, 52, 61),
+                                    color: Color.fromARGB(255, 21, 23, 28), 
                                     borderRadius: BorderRadius.circular(10)
                                   ),
                                   padding: EdgeInsets.only(left: 5,right: 5),
                                   child: 
                                     Text(
-                                      pin.label,
+                                      ((widget.selectedLanguage == "Tamil" ? pin.labelT: widget.selectedLanguage == "Sinhala" ? pin.labelS : pin.labelE)),
                                       style: TextStyle(
                                         color: Colors.white,
-                                        fontSize: 10,
+                                        fontSize: 4, 
                                       ),
                                   ),
-                                ),
+                                ), 
                                 Icon(Icons.location_pin,
-                                    color: Colors.red, size: 16),
+                                    color: Colors.red, size: 6),
                               ],
                             ),
                           ),
@@ -306,14 +460,16 @@ class _InteractiveContainerState extends State<InteractiveContainer> {
     );
   }
 
-  void _addPin(Offset position, String label) {
+  void _addPin(Offset position, String labelT,String labelS,String labelE) {
     String pinId = DateTime.now().millisecondsSinceEpoch.toString();
     GlobalKey pinKey = GlobalKey();
     Pin newPin = Pin(
       id: pinId,
       key: pinKey,
       position: position,
-      label: label,
+      labelT: labelT,
+      labelS: labelS,
+      labelE: labelE,
       width: 0.0,
       height: 0.0,
       isVisible: true,
@@ -348,7 +504,7 @@ class _InteractiveContainerState extends State<InteractiveContainer> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         for (var pin in pins) {
           _updatePinDimensions(pin.key);
-        }
+        }/////////////////////////////////////////////////////////////////////////////
       });
     } catch (e) {
       print('Error loading pins: $e');

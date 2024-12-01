@@ -5,7 +5,9 @@ class Pin {
   final String id;
   final GlobalKey key;
   final Offset position;
-  String label;
+  String labelT;
+  String labelS;
+  String labelE;
   double width;
   double height;
   bool isVisible;
@@ -14,7 +16,9 @@ class Pin {
     required this.id,
     required this.key,
     required this.position,
-    required this.label,
+    required this.labelT,
+    required this.labelS,
+    required this.labelE,
     required this.width,
     required this.height,
     this.isVisible = true,
@@ -22,7 +26,9 @@ class Pin {
 
   Map<String, dynamic> toMap() {
     return {
-      'label': label,
+      'labelT': labelT,
+      'labelS': labelS,
+      'labelE': labelE,
       'position': {'x': position.dx, 'y': position.dy},
       'timestamp': FieldValue.serverTimestamp(),
       'isVisible': isVisible,
@@ -38,7 +44,9 @@ class Pin {
         data['position']['x']?.toDouble() ?? 0.0,
         data['position']['y']?.toDouble() ?? 0.0,
       ),
-      label: data['label'] ?? '',
+      labelT: data['labelT'] ?? '',
+      labelS: data['labelS'] ?? '',
+      labelE: data['labelE'] ?? '',
       width: 0.0,
       height: 0.0,
       isVisible: data['isVisible'] ?? true,

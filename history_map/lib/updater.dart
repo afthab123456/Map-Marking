@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:history_map/widgets/pin.dart';
+import 'package:MapMarking/widgets/pin.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 void main() async {
@@ -39,6 +39,7 @@ class App extends StatefulWidget {
 class _AppState extends State<App> {
   List<Pin> pins = [];
   bool isMenu = false;
+  String Language = "Tamil";
   @override  
   Widget build(BuildContext context) {
       double screenHeight = MediaQuery.of(context).size.height;
@@ -141,7 +142,7 @@ class _AppState extends State<App> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(pin.label, style: TextStyle(color: Colors.white)),
+                                Text(pin.labelT, style: TextStyle(color: Colors.white)),
                                 IconButton(
                                   icon: Icon(
                                     pin.isVisible ? Icons.visibility : Icons.visibility_off,
@@ -263,7 +264,7 @@ class _AppState extends State<App> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(pin.label, style: TextStyle(color: Colors.white)),
+                                Text(pin.labelT, style: TextStyle(color: Colors.white)),
                                 IconButton(
                                   icon: Icon(
                                     pin.isVisible ? Icons.visibility : Icons.visibility_off,
@@ -374,7 +375,7 @@ class _InteractiveContainerState extends State<InteractiveContainer> {
                       child: Column(
                         children: [
                           Text(
-                            pin.label,
+                            pin.labelT,
                             style: TextStyle(color: Colors.white, fontSize: 12, backgroundColor: Colors.black54),
                           ),
                           Icon(Icons.location_pin, color: Colors.red, size: 20),
@@ -419,7 +420,9 @@ class _InteractiveContainerState extends State<InteractiveContainer> {
       id: pinId,
       key: pinKey,
       position: position,
-      label: label,
+      labelT: label,
+      labelE: label,
+      labelS: label,
       width: 0.0,
       height: 0.0,
       isVisible: true,
