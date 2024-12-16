@@ -1,10 +1,11 @@
+import 'package:MapMarking/river_viewer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:MapMarking/footer.dart';
 import 'package:MapMarking/game.dart';
-import 'package:MapMarking/test.dart';
+import 'package:MapMarking/gameSelection.dart';
 import 'package:MapMarking/contactform.dart';
 import 'package:MapMarking/underdev.dart';
 import 'package:MapMarking/viewer.dart';
@@ -57,19 +58,35 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  ScrollController _scrollController = ScrollController();
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_scrollListener);
   }
   
+void _scrollListener() {
+  double position = _scrollController.position.pixels; // Current scroll position
+  double maxScroll = _scrollController.position.maxScrollExtent; // Max scrollable area
+  double screenHeight = MediaQuery.of(context).size.height;
 
+  if (position < screenHeight) {
+    
+    
+  } 
+
+  // Additional logic for when the scroll reaches the end (if you want to implement infinite scrolling or similar)
+  if (position == maxScroll) {
+    print("Reached the end of the scrollable area");
+  }
+} 
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-   
    return Scaffold(
       body: SingleChildScrollView(
+        controller: _scrollController,
         child: Column(
           children: [
             Container(
@@ -141,7 +158,7 @@ class _MainPageState extends State<MainPage> {
                           ),
                           GestureDetector(
                             onTap:() { 
-                              _launchURL;
+                              _launchURL();
                             },
                             child: Container(
                               width:  250,
@@ -293,7 +310,7 @@ class _MainPageState extends State<MainPage> {
                          Positioned(
                           bottom: 50,
                           child: GestureDetector(onTap: () {
-                           print('object');
+                           _launchURL(); 
                          }, child: Container(width: 350,height: 40,color: const Color.fromARGB(0, 255, 255, 255),),))
                         
                                                 
@@ -353,7 +370,7 @@ class _MainPageState extends State<MainPage> {
             Container(
               width: 800,
               child: Text(                
-                "MapMarking is an innovative platform designed to help GCE Ordinary Level students excel in map marking. Recognizing the lack of resources in this area of the history syllabus, we've created a fun, interactive space where students can explore marked maps and learn through engaging games. Our platform transforms map marking into a game-like experience, making studying both enjoyable and effective. Whether you're preparing for exams or just practicing, our site makes learning history more interactive and exciting.", 
+                "MapMarking is an innovative platform designed to help GCE Ordinary Level students excel in MapMarking. Recognizing the lack of resources in this area of the history syllabus, we've created a fun, interactive space where students can explore marked maps and learn through engaging games. Our platform transforms MapMarking into a game-like experience, making studying both enjoyable and effective. Whether you're preparing for exams or just practicing, our site makes learning history more interactive and exciting.", 
                 style: TextStyle(
                   fontSize: screenWidth > 500 ? 16 : 13,
                   color: Colors.white70,
@@ -398,9 +415,9 @@ class _MainPageState extends State<MainPage> {
   child: Stack(
     children: [
       Positioned(
-        top: 0, 
+        top:screenWidth > 500 ? 0 : (screenHeight - screenWidth *1.5) /2,  
         right: 0, 
-        child: Image.asset("assets/dot_map.png",height: screenWidth > 500 ? screenHeight: screenWidth *2  ,),   
+        child: Image.asset("assets/dot_map.png",height: screenWidth > 500 ? screenHeight: screenWidth *1.5 ,),   
          
       ),
       
@@ -471,7 +488,7 @@ class _MainPageState extends State<MainPage> {
               onPressed: () {
                 Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => GameOptionsPage()), 
+              MaterialPageRoute(builder: (context) => GameOptionsPage(selectedMap: 'Srilanka - Places',selectedDifficulty: 'Easy',selectedPlaces: '5',selectedLanguage: 'Tamil',)), 
             );
               },
               style: ElevatedButton.styleFrom(
@@ -503,10 +520,14 @@ class _MainPageState extends State<MainPage> {
       Positioned(
         top: 0, 
         left: 0, 
-        child: Image.asset("assets/dot_mapW.png",height: screenHeight ,),   
+        child: Image.asset("assets/dot_mapR.png",fit: BoxFit.fill ,),   
          
       ), 
-      
+      Container(
+          width: screenWidth,
+          height: screenHeight, 
+          color: const Color.fromARGB(165, 0, 0, 0),
+        ),
       
         /*Container(
           width: screenWidth,
@@ -519,7 +540,116 @@ class _MainPageState extends State<MainPage> {
            Row(
           mainAxisAlignment: screenWidth > 900 ? MainAxisAlignment.end:MainAxisAlignment.start,  
           children: [
-          Column(mainAxisAlignment: MainAxisAlignment.center,crossAxisAlignment: CrossAxisAlignment.start,
+          Column(mainAxisAlignment: MainAxisAlignment.center,crossAxisAlignment: CrossAxisAlignment.start, 
+      children: [ 
+        Container(
+          padding: EdgeInsets.all(50),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start, 
+            children: [
+            Text(
+              'Water Bodies of Srilanka', 
+              style: GoogleFonts.poppins(
+                textStyle: TextStyle(
+                  fontSize: screenWidth > 500 ? 35 : 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFFc7e3da),
+                  fontStyle: FontStyle.italic,
+                  height: 1.2,
+                ),
+              ),
+              textAlign: TextAlign.left, 
+              
+            ), 
+            SizedBox(height: 20,), 
+            Container(
+              width: screenWidth > 900 ? 800 : screenWidth-100,  
+              child: Text(
+                "This section highlights the important waterbodies of Sri Lanka, essential for the GCE Ordinary Level history syllabus. Explore our interactive map to identify and mark lakes, reservoirs, and other key waterbodies while testing your knowledge through fun and engaging games. Whether revising or beginning anew, this tool is here to help you navigate Sri Lanka's aquatic geography with ease!",
+                style: TextStyle(
+                  fontSize: screenWidth > 500 ? 16 : 13,
+                  color: Colors.white70,
+                ),
+                textAlign: TextAlign.left, 
+                
+              ),
+            ),
+            SizedBox(height: 20,), 
+             Row(children: [
+              ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => RiversViewerApp()),
+            );
+              },
+               
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color.fromARGB(255, 38, 91, 75),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                minimumSize: screenWidth < 500 ? Size(75, 30) : Size(150, 40),
+              ), 
+              child: Text(
+                "View Map",
+                style: TextStyle(fontSize: screenWidth < 500 ? 12 : 16),
+              ),
+            ),
+            SizedBox(width: 15,),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push( 
+              context, 
+              MaterialPageRoute(builder: (context) => GameOptionsPage(selectedMap: 'Srilanka - Water Bodies',selectedDifficulty: 'Easy',selectedPlaces: '5',selectedLanguage: 'Tamil',)), 
+            );
+              },
+              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Color.fromARGB(255, 29, 34, 40),
+                                  foregroundColor: Colors.white,
+                                  shadowColor: Colors.black,
+                                  minimumSize: screenWidth < 500 ? Size(75, 30) : Size(150, 40),
+                                ),
+              child: Text(
+                "Play Game",
+                style: TextStyle(fontSize: screenWidth < 500 ? 12 : 16),
+              ),
+            ),
+             ],)
+             ],),
+        ),
+        
+      ],)
+      
+        
+        ],),
+        )) ,
+        
+        
+        ],
+  
+  ),
+), Container(
+  color: Color(0xFF20242a),
+  width: screenWidth,
+  height: screenHeight,  // Make sure the container takes up full height if needed
+  child: Stack(
+    children: [
+      Positioned(
+        top:screenWidth > 500 ? 0 : (screenHeight - screenWidth *1.5) /2,  
+        right: 0, 
+        child: Image.asset("assets/dot_mapW.png",height: screenWidth > 500 ? screenHeight: screenWidth *1.5 ,),   
+         
+      ),
+      
+      
+        Container(
+          width: screenWidth,
+          height: screenHeight, 
+          color: const Color.fromARGB(165, 0, 0, 0),
+        ),
+      Column(mainAxisAlignment: MainAxisAlignment.center,crossAxisAlignment: CrossAxisAlignment.start,
       children: [ 
         Container(
           padding: EdgeInsets.all(50),
@@ -542,15 +672,14 @@ class _MainPageState extends State<MainPage> {
             ), 
             SizedBox(height: 20,), 
             Container(
-              width: screenWidth > 900 ? 800 : screenWidth-100,  
+              width: 800,
               child: Text(
-                "Journey through the world map! This section focuses on key countries, regions, and historical landmarks crucial for the GCE Ordinary Level history syllabus. Use our interactive map to practice marking important locations and challenge yourself with fun games. Whether you're revising or learning something new, this tool is designed to help you master world geography with ease.", 
+                "Journey through the world map! This section focuses on key countries, regions, and historical landmarks crucial for the GCE Ordinary Level history syllabus. Use our interactive map to practice marking important locations and challenge yourself with fun games. Whether you're revising or learning something new, this tool is designed to help you master world geography with ease.",
                 style: TextStyle(
                   fontSize: screenWidth > 500 ? 16 : 13,
-                  color: Colors.white70,
+                  color: Colors.white70, 
                 ),
                 textAlign: TextAlign.left, 
-                
               ),
             ),
             SizedBox(height: 20,), 
@@ -581,7 +710,7 @@ class _MainPageState extends State<MainPage> {
               onPressed: () {
                 Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => GameOptionsPage()), 
+              MaterialPageRoute(builder: (context) => GameOptionsPage(selectedMap: 'Srilanka - Places',selectedDifficulty: 'Easy',selectedPlaces: '5',selectedLanguage: 'Tamil',)), 
             );
               },
               style: ElevatedButton.styleFrom(
@@ -601,19 +730,10 @@ class _MainPageState extends State<MainPage> {
         
       ],)
       
-        
-        ],),
-        )) ,
-        Container(
-          width: screenWidth,
-          height: screenHeight, 
-          color: const Color.fromARGB(165, 0, 0, 0),
-        ),
-        UnderDevelopmentWidget(), 
-        ],
-  
+       ],
   ),
-), Container(
+), 
+           Container(
   width: screenWidth,
   height: screenHeight,
   color: Color(0xFF20242a),

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+ bool _hasIncremented = true; //keep this true for testing so it does not update and remove before the main release
 class VisitorCounterWidget extends StatefulWidget {
   final double screenWidth;
-
+ 
   const VisitorCounterWidget({Key? key,required this.screenWidth}) : super(key: key);
 
   @override 
@@ -20,10 +20,12 @@ class _VisitorCounterWidgetState extends State<VisitorCounterWidget> {
   void initState() {
     super.initState();
     _visitorStream = _firestore.collection('counters').doc('visitorCount').snapshots();
-    _incrementVisitorCount(); // Increment count when widget loads
+    _incrementVisitorCountOnce(); // Ensure count is incremented only once
   }
 
-  Future<void> _incrementVisitorCount() async {
+  Future<void> _incrementVisitorCountOnce() async {
+    if (_hasIncremented) return; // Prevent multiple increments
+
     final DocumentReference counterRef = _firestore.collection('counters').doc('visitorCount');
 
     try {
@@ -37,6 +39,10 @@ class _VisitorCounterWidgetState extends State<VisitorCounterWidget> {
 
         transaction.set(counterRef, {'count': newCount});
       });
+
+     setState(() {
+        _hasIncremented = true; // Mark as incremented 
+     });
     } catch (e) {
       print('Error incrementing visitor count: $e');
     }
@@ -59,17 +65,14 @@ class _VisitorCounterWidgetState extends State<VisitorCounterWidget> {
           _visitorCount = snapshot.data!.data()?['count'] ?? 0;
         }
 
-        // Format the visitor count as a zero-padded string (e.g., 000010)
         String formattedCount = _visitorCount.toString().padLeft(6, '0');
         String previousFormattedCount = _previousCount.toString().padLeft(6, '0');
 
-        // Separate each digit of the count into a list of containers
         List<Widget> digitContainers = [];
         for (int i = 0; i < formattedCount.length; i++) {
           digitContainers.add(_buildDigitContainer(previousFormattedCount[i], formattedCount[i]));
         }
 
-        // Update the previous count after the animation
         if (_visitorCount != _previousCount) {
           _previousCount = _visitorCount;
         }
@@ -95,33 +98,42 @@ class _VisitorCounterWidgetState extends State<VisitorCounterWidget> {
       child: oldDigit == newDigit
           ? Container(
               key: ValueKey(newDigit),
-              margin:  EdgeInsets.symmetric(horizontal: 4),
-              padding: widget.screenWidth > 500 ? EdgeInsets.only(left: 20,right: 20,top: 10,bottom: 10) : EdgeInsets.only(left: 10,right: 10,top: 5,bottom: 5),
+              margin: EdgeInsets.symmetric(horizontal: 4),
+              padding: widget.screenWidth > 500
+                  ? EdgeInsets.symmetric(horizontal: 20, vertical: 20)
+                  : EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               decoration: BoxDecoration(
-                color: const Color.fromARGB(0, 255, 255, 255),
+                color: Color.fromARGB(206, 8, 10, 11),
                 borderRadius: BorderRadius.circular(8),
-                border:Border.all(color: Color(0xFFc7e3da),width: 2) 
-              ), 
+                //border: Border.all(color: Color(0xFFc7e3da), width: 2),
+              ),
               child: Text(
                 newDigit,
-                style: 
-                    TextStyle(fontSize: widget.screenWidth > 500 ? 40 : 18, fontWeight: FontWeight.bold, color: const Color.fromARGB(255, 255, 255, 255)),
+                style: TextStyle(
+                  fontSize: widget.screenWidth > 500 ? 40 : 18,
+                  fontWeight: FontWeight.bold,
+                  color: const Color.fromARGB(255, 255, 255, 255),
+                ),
               ),
             )
           : Container(
               key: ValueKey(newDigit),
               margin: EdgeInsets.symmetric(horizontal: 4),
-              padding: widget.screenWidth > 500 ? EdgeInsets.only(left: 20,right: 20,top: 10,bottom: 10) : EdgeInsets.only(left: 10,right: 10,top: 5,bottom: 5),
+              padding: widget.screenWidth > 500
+                  ? EdgeInsets.symmetric(horizontal: 20, vertical: 20)
+                  : EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               decoration: BoxDecoration(
-                color: const Color.fromARGB(0, 255, 255, 255),
+                color: Color.fromARGB(206, 8, 10, 11),
                 borderRadius: BorderRadius.circular(8),
-                
-                border:Border.all(color: Color(0xFFc7e3da),width: 2) 
+                //border: Border.all(color: Color(0xFFc7e3da), width: 2),
               ),
-              child: Text(
+              child: Text( 
                 newDigit,
-                style: 
-                    TextStyle(fontSize: widget.screenWidth > 500 ? 40 : 18 , fontWeight: FontWeight.bold, color: const Color.fromARGB(255, 255, 255, 255)),
+                style: TextStyle(
+                  fontSize: widget.screenWidth > 500 ? 40 : 18,
+                  fontWeight: FontWeight.bold,
+                  color: const Color.fromARGB(255, 255, 255, 255),
+                ),
               ),
             ),
     );

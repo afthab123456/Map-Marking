@@ -13,19 +13,19 @@ class Footer extends StatelessWidget {
         children: [ 
           // App name
           Text(
-            'MapMarker',
+            'MapMarking',
             style: TextStyle(
               color: Colors.white,
               fontSize: MediaQuery.of(context).size.width > 500 ? 18.0 : 10,
               fontWeight: FontWeight.bold,
             ),
           ),
-          Text('© 2024 Map Marker. All rights reserved.',style: TextStyle(color: Colors.white,fontSize: MediaQuery.of(context).size.width > 500 ? 15 : 8),),
-          Text('Version 2.1',style: TextStyle(color: Colors.white,fontSize: MediaQuery.of(context).size.width > 500 ? 15 : 8),)
+          Text('© 2024 MapMarking. All rights reserved.',style: TextStyle(color: Colors.white,fontSize: MediaQuery.of(context).size.width > 500 ? 15 : 8),),
+          Text('Version 2.5',style: TextStyle(color: Colors.white,fontSize: MediaQuery.of(context).size.width > 500 ? 15 : 8),)
           // Links section
          /*
           Row( 
-            children: [ 
+            children: [
               IconButton(
                 onPressed: () {}, // Replace with social media link
                 icon: Icon(Icons.facebook, color: Colors.white),

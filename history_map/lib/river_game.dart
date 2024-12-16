@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:MapMarking/test11.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -8,9 +9,24 @@ import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:MapMarking/main.dart';
 import 'package:MapMarking/gameSelection.dart';
-import 'package:MapMarking/widgets/pin.dart';
+import 'package:MapMarking/widgets/riverPin.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp( 
+    options: FirebaseOptions(
+      apiKey: "AIzaSyB_TbwLrkbVfS4dvrlWLAwZTmdtZEBa4ko",
+      authDomain: "historymap-f4e49.firebaseapp.com",
+      projectId: "historymap-f4e49",
+      storageBucket: "historymap-f4e49.firebasestorage.app",
+      messagingSenderId: "520243215533",
+      appId: "1:520243215533:web:78965dedfe72246d445a24",
+      measurementId: "G-ELRTJMMGKN",
+    ),
+  );
+  runApp(RiverGameApp(Language: 'Tamil',Map: 'sl',numOfPlaces: 5,level: 'Easy',)); 
+}
+ 
 
 class Result{
   final String LabelT;
@@ -38,19 +54,19 @@ class Result{
 
 
 
-class GameApp extends StatefulWidget {
+class RiverGameApp extends StatefulWidget {
   final String Language;
   final String Map;
   final String level;
   final int numOfPlaces;
-  GameApp({required this.Language,required this.Map,required this.level,required this.numOfPlaces});
+  RiverGameApp({required this.Language,required this.Map,required this.level,required this.numOfPlaces});
   @override
-  _GameAppState createState() => _GameAppState();
+  _RiverGameAppState createState() => _RiverGameAppState();
 }
 
-class _GameAppState extends State<GameApp> {
-  List<Pin> pins = [];
-  List<Pin> userPins = [];
+class _RiverGameAppState extends State<RiverGameApp> {
+  List<Riverpin> riverPins = [];
+  List<Riverpin> userriverPins = [];
   bool isMenu = false;
   bool instruct = true;
   @override  
@@ -66,14 +82,14 @@ class _GameAppState extends State<GameApp> {
                 GameInteractiveContainer(
                 screenHeight: screenHeight,
                 screenWidth: screenWidth,
-                onPinsUpdated: (updatedPins) {
+                onriverPinsUpdated: (updatedriverPins) {
                   setState(() {
-                    pins = updatedPins;
+                    riverPins = updatedriverPins;
                   });
                 },
-                onUserPinsUpdated: (updatedUserPins) {
+                onUserriverPinsUpdated: (updatedUserriverPins) {
                   setState(() {
-                    userPins = updatedUserPins;
+                    userriverPins = updatedUserriverPins;
                   });
                 },
                 Language: widget.Language,
@@ -87,7 +103,7 @@ class _GameAppState extends State<GameApp> {
           
             if(instruct) Center(
   child: Container(
-    height: 410, 
+    height: 465, 
     width: 300, 
     decoration: BoxDecoration(
       color:Color.fromARGB(255, 19, 21, 24),
@@ -108,10 +124,11 @@ class _GameAppState extends State<GameApp> {
                                   SizedBox(height: 20,), 
         Text(
   '1. Look at the place name displayed at the bottom of the screen.\n\n'
-  '2. Double-tap the map where you think that place is located to drop a pin.\n\n'
-  '3. Be careful! Once you place a pin, you can’t take it back.\n\n'
-  '4. Place all the pins before the timer at the bottom runs out.\n\n'
-  '5. Accuracy and speed are key. Good luck!',
+  '2. Double-tap the map where you think that place is located to drop a Pin.\n\n'
+  '3. You can zoom in to see the map in more detail.\n\n'
+  '4. Be careful! Once you place a Pin, you can’t take it back.\n\n'
+  '5. Place all the Pins before the timer at the bottom runs out.\n\n'
+  '6. Accuracy and speed are key. Good luck!',
   style: GoogleFonts.play(
     textStyle: TextStyle(
       fontSize: 15,
@@ -121,6 +138,7 @@ class _GameAppState extends State<GameApp> {
     ),
   ),
 ),
+
 SizedBox(height: 20,),
  ElevatedButton(
                                 style: ElevatedButton.styleFrom(
@@ -149,11 +167,11 @@ SizedBox(height: 20,),
     
   }
 
-  Future<void> _updatePinVisibilityInFirestore(Pin pin) async {
+  Future<void> _updateriverPinVisibilityInFirestore(Riverpin riverPin) async {
     try {
-      await FirebaseFirestore.instance.collection('pins').doc(pin.id).update({'isVisible': pin.isVisible});
+      await FirebaseFirestore.instance.collection('riverPins').doc(riverPin.id).update({'isVisible': riverPin.isVisible});
     } catch (e) {
-      print('Error updating pin visibility: $e');
+      print('Error updating riverPin visibility: $e');
     }
   } 
 }
@@ -170,11 +188,11 @@ class GameInteractiveContainer extends StatefulWidget {
   final String Map;
   final String level;
   final int numOfPlaces;
-  final Function(List<Pin>) onPinsUpdated;
-  final Function(List<Pin>) onUserPinsUpdated;
+  final Function(List<Riverpin>) onriverPinsUpdated;
+  final Function(List<Riverpin>) onUserriverPinsUpdated;
   final double screenHeight;
   final double screenWidth;
-  GameInteractiveContainer({required this.onPinsUpdated,required this.onUserPinsUpdated,required this.screenHeight,required this.screenWidth,required this.Language,required this.Map,required this.level,required this.numOfPlaces,required this.instruct});
+  GameInteractiveContainer({required this.onriverPinsUpdated,required this.onUserriverPinsUpdated,required this.screenHeight,required this.screenWidth,required this.Language,required this.Map,required this.level,required this.numOfPlaces,required this.instruct});
 
   @override
   _GameInteractiveContainerState createState() => _GameInteractiveContainerState();
@@ -185,10 +203,10 @@ class _GameInteractiveContainerState extends State<GameInteractiveContainer> {
   Offset mousePosition = Offset.zero;
   Offset clickPosition = Offset.zero; // Position of the click
   final GlobalKey containerKey = GlobalKey(); // Key for the container
-  List<Pin> pins = [];
-  List<Pin> selectedPins = []; 
-  List<Pin> userPins = [];
-  int currentPinIndex = 0;
+  List<Riverpin> riverPins = [];
+  List<Riverpin> selectedriverPins = []; 
+  List<Riverpin> userriverPins = [];
+  int currentriverPinIndex = 0;
   bool isGameOver = false;
   List<Result> results = [];
   String formatTime(int totalSeconds) {
@@ -206,7 +224,7 @@ class _GameInteractiveContainerState extends State<GameInteractiveContainer> {
       isViewResult = false;
       isRepeat = false;
     });
-    _loadPinsFromFirestore();
+    _loadriverPinsFromFirestore();
     _start = widget.numOfPlaces * 
          (widget.level == "Easy" ? 15 : 
          (widget.level == "Medium" ? 10 : 
@@ -224,7 +242,7 @@ class _GameInteractiveContainerState extends State<GameInteractiveContainer> {
   }
   @override
   Widget build(BuildContext context) {
-    if(currentPinIndex >= selectedPins.length && currentPinIndex != 0 && isGameOver == false){      
+    if(currentriverPinIndex >= selectedriverPins.length && currentriverPinIndex != 0 && isGameOver == false){      
       gameOver();
     }    
 
@@ -245,11 +263,11 @@ class _GameInteractiveContainerState extends State<GameInteractiveContainer> {
         if (renderBox != null) {clickPosition = renderBox.globalToLocal(details.globalPosition);
           double px = ((clickPosition.dx)-(isProperRatio ? driftX : 0))/scaleX; 
           double py = ((clickPosition.dy)-(!isProperRatio ? driftY : 0))/scaleY;
-          if ((!(currentPinIndex >= selectedPins.length))&&!isGameOver){ 
+          if ((!(currentriverPinIndex >= selectedriverPins.length))&&!isGameOver){ 
              
-            _addPin(Offset(px, py), selectedPins[currentPinIndex].labelT,selectedPins[currentPinIndex].labelS,selectedPins[currentPinIndex].labelE);
+            _addriverPin(Offset(px, py), selectedriverPins[currentriverPinIndex].labelT,selectedriverPins[currentriverPinIndex].labelS,selectedriverPins[currentriverPinIndex].labelE,selectedriverPins[currentriverPinIndex].isRiver,int.parse(tappedLabel));
                       
-            currentPinIndex++;
+            currentriverPinIndex++;
               
           }   
           
@@ -280,61 +298,63 @@ class _GameInteractiveContainerState extends State<GameInteractiveContainer> {
                 child: Stack(
                   children: [
                     SvgPicture.asset(
-                      'assets/test.svg', 
+                      'assets/river_map.svg', 
                       width: double.infinity,
                       height: double.infinity,
                       fit: isProperRatio ? BoxFit.fitHeight : BoxFit.fitWidth,
                       color: Colors.white,
-                    ), 
-                    
+                    ),                      
+                    Center(child: GridOverlay(rows: 200, columns: 100, gridWidth: 300*scaleX, gridHeight: 600*scaleY), ),
                     if(isViewResult)
-                    for (var pin in selectedPins)
-                      if (pin.isVisible)
+                    for (var riverPin in selectedriverPins)
+                      if (riverPin.isVisible)
                         Positioned(
-                          left: (pin.position.dx * scaleX) +
-                              (isProperRatio ? driftX : 0) -
-                              pin.width / 2,
-                          top: pin.position.dy * scaleY +
+                          left: (riverPin.position.dx * scaleX) +
+                              (isProperRatio ? driftX : 0) - (!riverPin.isRiver ? riverPin.width / 2 : 0),
+                          top: riverPin.position.dy * scaleY +
                               (!isProperRatio ? driftY : 0) -
-                              pin.height +
+                              riverPin.height +
                               2,
                           child: Container(
-                            key: pin.key,
-                            child: Column(
+                            key: riverPin.key,
+                            child: Column( 
                               children: [
-                               Container(
+                                Transform.rotate(angle: riverPin.angel * pi / 180,alignment: Alignment.centerLeft,child: Container(
                                   decoration: BoxDecoration(
-                                    color: Color.fromARGB(255, 21, 23, 28), 
+                                    color: riverPin.isRiver ? Color.fromARGB(255, 25, 34, 49) : Color.fromARGB(255, 29, 63, 58),
                                     borderRadius: BorderRadius.circular(10)
                                   ),
                                   padding: EdgeInsets.only(left: 5,right: 5),
                                   child: 
                                     Text(
-                                      ((widget.Language == "Tamil" ? pin.labelT: widget.Language == "Sinhala" ? pin.labelS : pin.labelE)),
+                                      ((widget.Language == "Tamil" ? riverPin.labelT: widget.Language == "Sinhala" ? riverPin.labelS : riverPin.labelE)),
                                       style: TextStyle(
                                         color: Colors.white,
-                                        fontSize: 10, 
+                                        fontSize: 4, 
                                       ),
                                   ),
-                                ), 
+                                ), ), 
+                                if (!riverPin.isRiver)
                                 Icon(Icons.location_pin,
-                                    color: Colors.red, size: 16),
+                                    color: const Color.fromARGB(255, 29, 63, 58), size: 6), 
+                                 
                               ],
                             ),
                           ),
-                        ),
-                        for (var pin in userPins)
-                      if (pin.isVisible) 
+                        ), 
+                  
+                        for (var riverPin in userriverPins)
+                      if (riverPin.isVisible) 
                         Positioned(
-                          left: (pin.position.dx * scaleX) +
+                          left: (riverPin.position.dx * scaleX) +
                               (isProperRatio ? driftX : 0) -
-                              pin.width / 2,
-                          top: pin.position.dy * scaleY +
+                              riverPin.width / 2,
+                          top: riverPin.position.dy * scaleY +
                               (!isProperRatio ? driftY : 0) -
-                              pin.height +
+                              riverPin.height +
                               2,
                           child: Container(
-                            key: pin.key,
+                            key: riverPin.key,
                             child: Column(
                               children: [
                                  Container(
@@ -345,17 +365,18 @@ class _GameInteractiveContainerState extends State<GameInteractiveContainer> {
                                   padding: EdgeInsets.only(left: 5,right: 5),
                                   child: 
                                     Text(
-                                      ((widget.Language == "Tamil" ? pin.labelT: widget.Language == "Sinhala" ? pin.labelS : pin.labelE)),
+                                      ((widget.Language == "Tamil" ? riverPin.labelT: widget.Language == "Sinhala" ? riverPin.labelS : riverPin.labelE)),
                  
                                       style: TextStyle(
                                         color: Colors.white,
-                                        fontSize: 10,
+                                        fontSize: 4
                                       ),
                                   ),
                                 ),
+                                if (!riverPin.isRiver)
                                 Icon(Icons.location_pin,
-                                    color: Color.fromARGB(255, 37, 92, 75), size: 16),
-                                ],
+                                    color: const Color.fromARGB(255, 29, 63, 58), size: 6),
+                                ], 
                             ),
                           ),
                         ),
@@ -404,7 +425,7 @@ class _GameInteractiveContainerState extends State<GameInteractiveContainer> {
                                   ),), 
                                 SizedBox(height: 15,), 
                                 Text(
-                                  '$correctCount/${selectedPins.length}'.toUpperCase(), 
+                                  '$correctCount/${selectedriverPins.length}'.toUpperCase(), 
                                   textAlign: TextAlign.center,
                                   style: GoogleFonts.play( 
                                     textStyle: TextStyle(
@@ -482,8 +503,8 @@ class _GameInteractiveContainerState extends State<GameInteractiveContainer> {
                                     isViewResult = true;
                                   });
                                    WidgetsBinding.instance.addPostFrameCallback((_) {
-        for (var pin in selectedPins) {
-          _updatePinDimensions(pin.key); 
+        for (var riverPin in selectedriverPins) {
+          _updateriverPinDimensions(riverPin.key); 
         }
       });  
 
@@ -525,9 +546,9 @@ class _GameInteractiveContainerState extends State<GameInteractiveContainer> {
                                   setState(() {
                                     isRepeat = true;
                                     isViewResult = false;
-                                    userPins = [];
+                                    userriverPins = [];
                                     isGameOver = false;
-                                    currentPinIndex = 0;
+                                    currentriverPinIndex = 0;
                                   });
                                   
                                   _start = widget.numOfPlaces * 
@@ -553,7 +574,7 @@ class _GameInteractiveContainerState extends State<GameInteractiveContainer> {
                                 onPressed: () {                                  
                                   Navigator.push(
                                         context,
-                                        MaterialPageRoute(builder: (context) => GameOptionsPage(selectedDifficulty: widget.level,selectedLanguage: widget.Language,selectedMap: widget.Map,selectedPlaces: widget.numOfPlaces.toString(),)), 
+                                        MaterialPageRoute(builder: (context) => GameOptionsPage(selectedDifficulty: widget.level,selectedLanguage: widget.Language,selectedMap: widget.Map,selectedPlaces: widget.numOfPlaces.toString() ,)), 
                                       ); 
                                 },
                                 child: Text('New Game',style:  GoogleFonts.play(
@@ -588,12 +609,12 @@ class _GameInteractiveContainerState extends State<GameInteractiveContainer> {
                       child: Center(
                         child:Text(
                           style: TextStyle( fontSize: 15,color: Colors.white), 
-                          (currentPinIndex >= 0 && currentPinIndex < selectedPins.length)
+                          (currentriverPinIndex >= 0 && currentriverPinIndex < selectedriverPins.length)
     ? (widget.Language == "Tamil"
-        ? selectedPins[currentPinIndex].labelT
+        ? selectedriverPins[currentriverPinIndex].labelT
         : widget.Language == "Sinhala"
-            ? selectedPins[currentPinIndex].labelS
-            : selectedPins[currentPinIndex].labelE)
+            ? selectedriverPins[currentriverPinIndex].labelS
+            : selectedriverPins[currentriverPinIndex].labelE)
     : 'Loading...')
 
                       ),
@@ -610,7 +631,7 @@ class _GameInteractiveContainerState extends State<GameInteractiveContainer> {
                       child: Center(
                         child:Text(
                           style: TextStyle(fontSize: 15,color: Colors.white),
-                          "${userPins.length}/${selectedPins.length}")
+                          "${userriverPins.length}/${selectedriverPins.length}")
                       ),
                     ),), 
                     SizedBox(width: 5,), 
@@ -660,29 +681,32 @@ class _GameInteractiveContainerState extends State<GameInteractiveContainer> {
     );
   }
 
-  void _addPin(Offset position, String labelT,String labelS,String labelE) {
-    String pinId = DateTime.now().millisecondsSinceEpoch.toString();
-    GlobalKey pinKey = GlobalKey();
-    Pin newPin = Pin(
-      id: pinId,
-      key: pinKey,
+  void _addriverPin(Offset position, String labelT,String labelS,String labelE,bool isRiver,int index){
+    String riverPinId = DateTime.now().millisecondsSinceEpoch.toString();
+    GlobalKey riverPinKey = GlobalKey();
+    Riverpin newriverPin = Riverpin(
+      id: riverPinId,
+      key: riverPinKey,
       position: position,
       labelT: labelT,
       labelE: labelE,
-      labelS: labelS,
+      labelS: labelS, 
       width: 0.0,
       height: 0.0,
       isVisible: true,
+      angel: 0,
+      isRiver: isRiver,
+      index: index
     );
 
     setState(() {
-      userPins.add(newPin);
+      userriverPins.add(newriverPin);
     });
  
-    widget.onUserPinsUpdated(userPins);
+    widget.onUserriverPinsUpdated(userriverPins);
     
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _updateUserPinDimensions(pinKey); 
+      _updateUserriverPinDimensions(riverPinKey); 
     });
   }
   void startTimer() {
@@ -702,23 +726,24 @@ Future<void> gameOver() async {
   setState(() {
     isGameOver = true;
   });
-  results.clear();
+  results.clear(); 
   
-  for (int pinNum = 0; pinNum < userPins.length; pinNum++) {
-    double userX = userPins[pinNum].position.dx;
-    double userY = userPins[pinNum].position.dy;
-    double correctX = selectedPins[pinNum].position.dx;
-    double correctY = selectedPins[pinNum].position.dy;
+  for (int riverPinNum = 0; riverPinNum < userriverPins.length; riverPinNum++) {
+    double userX = userriverPins[riverPinNum].position.dx;
+    double userY = userriverPins[riverPinNum].position.dy;
+    double correctX = selectedriverPins[riverPinNum].position.dx;
+    double correctY = selectedriverPins[riverPinNum].position.dy;
     double distance = sqrt(pow(userX - correctX, 2) + pow(userY - correctY, 2));
-    
-    bool good = distance < 10;  // Set 'good' based on distance condition
+    int index = selectedriverPins[riverPinNum].index;
+    int indexUser = userriverPins[riverPinNum].index;
+    bool good = selectedriverPins[riverPinNum].isRiver ? index == indexUser : distance < 10; 
     
     print(distance);
     
     results.add(Result(
-      LabelT: selectedPins[pinNum].labelT,
-      LabelS: selectedPins[pinNum].labelS,
-      LabelE: selectedPins[pinNum].labelE,
+      LabelT: selectedriverPins[riverPinNum].labelT,
+      LabelS: selectedriverPins[riverPinNum].labelS,
+      LabelE: selectedriverPins[riverPinNum].labelE,
       distance: distance.toInt(),
       good: good
     ));    
@@ -737,37 +762,37 @@ int countGoodResults(List<Result> results) {
 }
  
 
-  Future<void> _savePinToFirestore(Pin pin) async {
+  Future<void> _saveriverPinToFirestore(Riverpin riverPin) async {
     try {
-      await firestore.collection('pins').add(pin.toMap());
+      await firestore.collection('riverPins').add(riverPin.toMap());
     } catch (e) {
-      print('Error saving pin: $e');
+      print('Error saving riverPin: $e');
     }
   }
 
-  void _loadPinsFromFirestore() async {
+  void _loadriverPinsFromFirestore() async {
     try {
-      QuerySnapshot querySnapshot = await firestore.collection('pins').get();
+      QuerySnapshot querySnapshot = await firestore.collection('riverPins').get();
       setState(() {
-        pins = querySnapshot.docs.map((doc) => Pin.fromFirestore(doc)).toList();
+        riverPins = querySnapshot.docs.map((doc) => Riverpin.fromFirestore(doc)).toList();
       });
-      widget.onPinsUpdated(pins);
+      widget.onriverPinsUpdated(riverPins);
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        for (var pin in pins) {
-          _updatePinDimensions(pin.key);
+        for (var riverPin in riverPins) {
+          _updateriverPinDimensions(riverPin.key);
         }
         
       });
       
       
-     randomPick(pins, selectedPins, widget.numOfPlaces);
+     randomPick(riverPins, selectedriverPins, widget.numOfPlaces);
       
     } catch (e) {
-      print('Error loading pins: $e');
+      print('Error loading riverPins: $e');
     }
   }
 
-  void randomPick(List<Pin> source, List<Pin> target, int count) {
+  void randomPick(List<Riverpin> source, List<Riverpin> target, int count) {
   Random random = Random();
   Set<int> pickedIndices = {}; // To store already picked indices
 
@@ -781,25 +806,25 @@ int countGoodResults(List<Result> results) {
   }
 }
 
-  void _updatePinDimensions(GlobalKey pinKey) {
-    final renderBox = pinKey.currentContext?.findRenderObject() as RenderBox?;
+  void _updateriverPinDimensions(GlobalKey riverPinKey) {
+    final renderBox = riverPinKey.currentContext?.findRenderObject() as RenderBox?;
     if (renderBox != null) {
       final size = renderBox.size;
       setState(() {
-        final pin = pins.firstWhere((pin) => pin.key == pinKey);
-        pin.width = size.width;
-        pin.height = size.height;
+        final riverPin = riverPins.firstWhere((riverPin) => riverPin.key == riverPinKey);
+        riverPin.width = size.width;
+        riverPin.height = size.height;
       });
     }
   }
-  void _updateUserPinDimensions(GlobalKey pinKey) {
-    final renderBox = pinKey.currentContext?.findRenderObject() as RenderBox?;
+  void _updateUserriverPinDimensions(GlobalKey riverPinKey) {
+    final renderBox = riverPinKey.currentContext?.findRenderObject() as RenderBox?;
     if (renderBox != null) {
       final size = renderBox.size;
       setState(() {
-        final pin = userPins.firstWhere((pin) => pin.key == pinKey);
-        pin.width = size.width;
-        pin.height = size.height;
+        final riverPin = userriverPins.firstWhere((riverPin) => riverPin.key == riverPinKey);
+        riverPin.width = size.width;
+        riverPin.height = size.height;
       });
     }
   }

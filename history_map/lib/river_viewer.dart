@@ -1,3 +1,7 @@
+import 'dart:math';
+
+import 'package:MapMarking/remap.dart';
+import 'package:MapMarking/test11.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -5,17 +9,34 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:MapMarking/main.dart';
 import 'package:MapMarking/marking_popup.dart';
-import 'package:MapMarking/widgets/pin.dart';
+import 'package:MapMarking/widgets/riverPin.dart';
 
 
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp( 
+    options: FirebaseOptions(
+      apiKey: "AIzaSyB_TbwLrkbVfS4dvrlWLAwZTmdtZEBa4ko",
+      authDomain: "historymap-f4e49.firebaseapp.com",
+      projectId: "historymap-f4e49",
+      storageBucket: "historymap-f4e49.firebasestorage.app",
+      messagingSenderId: "520243215533",
+      appId: "1:520243215533:web:78965dedfe72246d445a24",
+      measurementId: "G-ELRTJMMGKN",
+    ),
+  );
+  runApp(RiversViewerApp()); 
+}
+ 
 
-class ViewerApp extends StatefulWidget {
+
+class RiversViewerApp extends StatefulWidget {
   @override
-  _ViewerAppState createState() => _ViewerAppState();
+  _RiversViewerAppState createState() => _RiversViewerAppState();
 }
 
-class _ViewerAppState extends State<ViewerApp> {
-  List<Pin> pins = [];
+class _RiversViewerAppState extends State<RiversViewerApp> {
+  List<Riverpin> riverPins = [];
   bool isMenu = false;
   bool isSettings = false;
   bool islanguageSelect = true;
@@ -25,33 +46,33 @@ class _ViewerAppState extends State<ViewerApp> {
   
   void toggleVisibility(int index) {
     setState(() {
-      pins[index].isVisible = !pins[index].isVisible;
+      riverPins[index].isVisible = !riverPins[index].isVisible;
     });
   }
-  void hideAllPins(List<Pin> pins) {
-  for (var pin in pins) {
+  void hideAllriverPins(List<Riverpin> riverPins) {
+  for (var riverPin in riverPins) {
     setState(() {
-      pin.isVisible = false;
+      riverPin.isVisible = false;
     });
   }
 }
-void showAllPins(List<Pin> pins) {
-  for (var pin in pins) {
+void showAllriverPins(List<Riverpin> riverPins) {
+  for (var riverPin in riverPins) {
     setState(() {
-      pin.isVisible = true; 
+      riverPin.isVisible = true; 
     });
   }
 }
 
-  void updateVisibilityAll(List<Pin> pins, bool isVisible) {
-  for (var pin in pins) {
-    pin.isVisible = isVisible;
+  void updateVisibilityAll(List<Riverpin> riverPins, bool isVisible) {
+  for (var riverPin in riverPins) {
+    riverPin.isVisible = isVisible;
   }
 }
-void showSpecificPin(List<Pin> pins, String pinId) {
-  for (var pin in pins) {
+void showSpecificriverPin(List<Riverpin> riverPins, String riverPinId) {
+  for (var riverPin in riverPins) {
     setState(() {
-      pin.isVisible = pin.id == pinId; 
+      riverPin.isVisible = riverPin.id == riverPinId; 
     });
   }
 }
@@ -62,14 +83,14 @@ String LastSearch = '';
 TextEditingController _controller = TextEditingController();
   @override  
   Widget build(BuildContext context) {
-    List<Pin> filteredPins = pins.where((pin) {
-      return pin.labelT.toLowerCase().contains(searchQuery.toLowerCase()) ||
-          pin.labelS.toLowerCase().contains(searchQuery.toLowerCase()) ||
-          pin.labelE.toLowerCase().contains(searchQuery.toLowerCase());
+    List<Riverpin> filteredriverPins = riverPins.where((riverPin) {
+      return riverPin.labelT.toLowerCase().contains(searchQuery.toLowerCase()) ||
+          riverPin.labelS.toLowerCase().contains(searchQuery.toLowerCase()) ||
+          riverPin.labelE.toLowerCase().contains(searchQuery.toLowerCase());
     }).toList();
 
     // Sort by the position of the query (front matches first).
-    filteredPins.sort((a, b) {
+    filteredriverPins.sort((a, b) {
       int getPriority(String label) {
         int index = label.toLowerCase().indexOf(searchQuery.toLowerCase());
         return index == -1 ? 999 : index; // Assign a high value if no match.
@@ -100,9 +121,9 @@ TextEditingController _controller = TextEditingController();
               InteractiveContainer(
                 screenHeight: screenHeight,
                 screenWidth: screenWidth,
-                onPinsUpdated: (updatedPins) {
+                onriverPinsUpdated: (updatedriverPins) {
                   setState(() {
-                    pins = updatedPins;
+                    riverPins = updatedriverPins;
                   });                
                 },
                 selectedLanguage: selectedLanguage,
@@ -133,7 +154,7 @@ TextEditingController _controller = TextEditingController();
               setState(() {
                 searchQuery = ""; // Reset any search-related variables if needed
               });
-              showAllPins(pins); 
+              showAllriverPins(riverPins); 
       },
       child: Padding(
       padding: EdgeInsets.only(left: 10, right: 20), // Push the icon inward
@@ -171,7 +192,7 @@ TextEditingController _controller = TextEditingController();
 ),
 ),  
           ),  !searchQuery.isEmpty
-                && !filteredPins.isEmpty && isSearchR
+                && !filteredriverPins.isEmpty && isSearchR
                     ?  Center(child: Container(
                       decoration: BoxDecoration(borderRadius: BorderRadius.circular(20),color: Color.fromARGB(255, 19, 21, 24)),
                         
@@ -182,22 +203,22 @@ TextEditingController _controller = TextEditingController();
                           ),
                           child: ListView.builder(
                             shrinkWrap: true,
-                            itemCount: filteredPins.length,
+                            itemCount: filteredriverPins.length,
                             itemBuilder: (context, index) {
-                              final pin = filteredPins[index];
+                              final riverPin = filteredriverPins[index];
                               return   ListTile(onTap: () {
                                 setState(() {
                                   isSearchR = false;
                                   LastSearch = searchQuery;
                                 });
-       showSpecificPin(pins,pin.id);
+       showSpecificriverPin(riverPins,riverPin.id);
       },
 
       
                                 
                                 leading: Icon(Icons.location_pin, color: Colors.red,),  
-                                title: Text(pin.labelE,style: TextStyle(color: Colors.white,fontSize: 16),),
-                                subtitle: Text('${pin.labelT} | ${pin.labelS}',style: TextStyle(color: Colors.white,fontSize: 10),),
+                                title: Text(riverPin.labelE,style: TextStyle(color: Colors.white,fontSize: 16),),
+                                subtitle: Text('${riverPin.labelT} | ${riverPin.labelS}',style: TextStyle(color: Colors.white,fontSize: 10),),
                               );   
                             },
                           ),
@@ -296,8 +317,8 @@ TextEditingController _controller = TextEditingController();
                       });
                       await Future.delayed(Duration(seconds: 1));
                       WidgetsBinding.instance.addPostFrameCallback((_) {
-        for (var pin in pins) {
-          _updatePinDimensions(pin.key);
+        for (var riverPin in riverPins) {
+          _updateriverPinDimensions(riverPin.key);
         }
       });  
                     },
@@ -313,7 +334,7 @@ TextEditingController _controller = TextEditingController();
               }).toList(),
             ),
             SizedBox(height: 20),
-            Text('Pin Visibility', style: GoogleFonts.play( 
+            Text('riverPin Visibility', style: GoogleFonts.play( 
                                     textStyle: TextStyle(
                                       fontSize: 15, 
                                       fontWeight: FontWeight.bold,
@@ -325,14 +346,14 @@ TextEditingController _controller = TextEditingController();
             Row(
               children: [
                 ElevatedButton.icon(
-                  onPressed: () {showAllPins(pins);}, 
+                  onPressed: () {showAllriverPins(riverPins);}, 
                   icon: Icon(Icons.visibility, size: 18, color: Colors.white),
                   label: Text('Show All', style: TextStyle(color: Colors.white, fontSize: 12)),
                   style: ElevatedButton.styleFrom(backgroundColor: Color.fromARGB(255, 13, 15, 18)),
                 ),
                 SizedBox(width: 10),
                 ElevatedButton.icon(
-                  onPressed: () {hideAllPins(pins);},
+                  onPressed: () {hideAllriverPins(riverPins);},
                   icon: Icon(Icons.visibility_off, size: 18, color: Colors.white),
                   label: Text('Hide All', style: TextStyle(color: Colors.white, fontSize: 12)),
                   style: ElevatedButton.styleFrom(backgroundColor: Color.fromARGB(255, 13, 15, 18)),
@@ -344,7 +365,7 @@ TextEditingController _controller = TextEditingController();
   child: ScrollConfiguration(
     behavior: ScrollBehavior().copyWith(overscroll: false, scrollbars: false),
     child: ListView.builder(
-      itemCount: pins.length,
+      itemCount: riverPins.length,
       itemBuilder: (context, index) {
         return Container(
           margin: EdgeInsets.symmetric(vertical: 5),
@@ -357,14 +378,14 @@ TextEditingController _controller = TextEditingController();
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                ((selectedLanguage == "Tamil" ? pins[index].labelT: selectedLanguage == "Sinhala" ? pins[index].labelS : pins[index].labelE)),
+                ((selectedLanguage == "Tamil" ? riverPins[index].labelT: selectedLanguage == "Sinhala" ? riverPins[index].labelS : riverPins[index].labelE)),
                 
                 style: TextStyle(fontSize: 13.0, color: Colors.white),
               ), 
               IconButton(
                 icon: Icon(
-                  pins[index].isVisible ? Icons.visibility : Icons.visibility_off,
-                  color: pins[index].isVisible ? Colors.white : Colors.grey,
+                  riverPins[index].isVisible ? Icons.visibility : Icons.visibility_off,
+                  color: riverPins[index].isVisible ? Colors.white : Colors.grey,
                 ),
                 onPressed: () => toggleVisibility(index),
               ),
@@ -430,8 +451,8 @@ TextEditingController _controller = TextEditingController();
         });
                       await Future.delayed(Duration(seconds: 1)); 
                       WidgetsBinding.instance.addPostFrameCallback((_) {
-        for (var pin in pins) {
-          _updatePinDimensions(pin.key);
+        for (var riverPin in riverPins) {
+          _updateriverPinDimensions(riverPin.key);
         }
        
       }); 
@@ -460,32 +481,32 @@ TextEditingController _controller = TextEditingController();
   }
   
   
-  Future<void> _updatePinVisibilityInFirestore(Pin pin) async {
+  Future<void> _updateriverPinVisibilityInFirestore(Riverpin riverPin) async {
     try {
-      await FirebaseFirestore.instance.collection('pins').doc(pin.id).update({'isVisible': pin.isVisible});
+      await FirebaseFirestore.instance.collection('riverPins').doc(riverPin.id).update({'isVisible': riverPin.isVisible});
     } catch (e) {
-      print('Error updating pin visibility: $e');
+      print('Error updating riverPin visibility: $e');
     }
   }
-  void _updatePinDimensions(GlobalKey pinKey) {
-    final renderBox = pinKey.currentContext?.findRenderObject() as RenderBox?;
+  void _updateriverPinDimensions(GlobalKey riverPinKey) {
+    final renderBox = riverPinKey.currentContext?.findRenderObject() as RenderBox?;
     if (renderBox != null) {
       final size = renderBox.size;
       setState(() {
-        final pin = pins.firstWhere((pin) => pin.key == pinKey);
-        pin.width = size.width;
-        pin.height = size.height;
+        final riverPin = riverPins.firstWhere((riverPin) => riverPin.key == riverPinKey);
+        riverPin.width = size.width;
+        riverPin.height = size.height;
       });
     }
   } 
 }
 
 class InteractiveContainer extends StatefulWidget {
-  final Function(List<Pin>) onPinsUpdated;  
+  final Function(List<Riverpin>) onriverPinsUpdated;  
   final double screenHeight;
   final double screenWidth;
   final String selectedLanguage;
-  InteractiveContainer({required this.onPinsUpdated,required this.screenHeight,required this.screenWidth,required this.selectedLanguage});
+  InteractiveContainer({required this.onriverPinsUpdated,required this.screenHeight,required this.screenWidth,required this.selectedLanguage});
 
   @override
   _InteractiveContainerState createState() => _InteractiveContainerState();
@@ -494,7 +515,7 @@ class _InteractiveContainerState extends State<InteractiveContainer> {
   Offset mousePosition = Offset.zero;
   Offset clickPosition = Offset.zero; // Position of the click
   final GlobalKey containerKey = GlobalKey(); // Key for the container
-  List<Pin> pins = [];
+  List<Riverpin> riverPins = [];
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   //remove 
   int tindex = 0; 
@@ -502,7 +523,7 @@ class _InteractiveContainerState extends State<InteractiveContainer> {
   @override
   void initState() {
     super.initState();
-    _loadPinsFromFirestore();
+    _loadriverPinsFromFirestore();
     
   }
 
@@ -526,11 +547,17 @@ class _InteractiveContainerState extends State<InteractiveContainer> {
           double px = ((clickPosition.dx)-(isProperRatio ? driftX : 0))/scaleX; 
           double py = ((clickPosition.dy)-(!isProperRatio ? driftY : 0))/scaleY;
           //Uncomment this to add new places
-          //final label = await showLabelInputDialog(context);
-          //if (label != null && label.isNotEmpty) {
-          //  print('Entered Label: $label');
-          //  _addPin(Offset(px, py), label,'sinhala$tindex','english$tindex');
-          //}
+         final input = await showLabelInputAndAngleDialog(context);
+if (input != null && input['label'] != null && input['label']!.isNotEmpty) {
+  final label = input['label']!;
+  final angle = int.tryParse(input['angle'] ?? '0') ?? 0; // Safely parse angle
+  final isRiver = input['isRiver'] ?? false; // Get isRiver value
+  print('Entered Label: $label');
+  print('Entered Angle: $angle');
+  print('Is River: $isRiver');
+  _addriverPin(Offset(px, py), label, 'sinhala$tindex', 'english$tindex', angle, isRiver);
+}
+ 
           
           //tindex ++; 
         }
@@ -561,49 +588,50 @@ class _InteractiveContainerState extends State<InteractiveContainer> {
                 child: Stack(
                   children: [
                     SvgPicture.asset(
-                      'assets/test.svg', 
+                      'assets/river_map.svg', 
                       width: double.infinity,
                       height: double.infinity,
                       fit: isProperRatio ? BoxFit.fitHeight : BoxFit.fitWidth,
                       color: Colors.white,
-                    ),
-                    for (var pin in pins)
-                      if (pin.isVisible)
+                    ), 
+                    for (var riverPin in riverPins)  
+                      if (riverPin.isVisible)
                         Positioned(
-                          left: (pin.position.dx * scaleX) +
-                              (isProperRatio ? driftX : 0) -
-                              pin.width / 2,
-                          top: pin.position.dy * scaleY +
+                          left: (riverPin.position.dx * scaleX) +
+                              (isProperRatio ? driftX : 0) - (!riverPin.isRiver ? riverPin.width / 2 : 0),
+                          top: riverPin.position.dy * scaleY +
                               (!isProperRatio ? driftY : 0) -
-                              pin.height +
-                              2, 
+                              riverPin.height +
+                              2,
                           child: Container(
-                            key: pin.key,
-                            child: Column(
+                            key: riverPin.key,
+                            child: Column( 
                               children: [
-                                Container(
+                                Transform.rotate(angle: riverPin.angel * pi / 180,alignment: Alignment.centerLeft,child: Container(
                                   decoration: BoxDecoration(
-                                    color: Color.fromARGB(255, 21, 23, 28), 
+                                    color: riverPin.isRiver ? Color.fromARGB(255, 25, 34, 49) : Color.fromARGB(255, 29, 63, 58),
                                     borderRadius: BorderRadius.circular(10)
                                   ),
                                   padding: EdgeInsets.only(left: 5,right: 5),
                                   child: 
                                     Text(
-                                      ((widget.selectedLanguage == "Tamil" ? pin.labelT: widget.selectedLanguage == "Sinhala" ? pin.labelS : pin.labelE)),
+                                      ((widget.selectedLanguage == "Tamil" ? riverPin.labelT: widget.selectedLanguage == "Sinhala" ? riverPin.labelS : riverPin.labelE)),
                                       style: TextStyle(
                                         color: Colors.white,
                                         fontSize: 4, 
                                       ),
                                   ),
-                                ), 
+                                ), ), 
+                                if (!riverPin.isRiver)
                                 Icon(Icons.location_pin,
-                                    color: Colors.red, size: 6),
+                                    color: const Color.fromARGB(255, 29, 63, 58), size: 6), 
+                                 
                               ],
                             ),
                           ),
                         ),
-                  ],
-                ),
+                  ], 
+                ), 
               ),
             ),
             
@@ -613,12 +641,12 @@ class _InteractiveContainerState extends State<InteractiveContainer> {
     );
   }
 
-  void _addPin(Offset position, String labelT,String labelS,String labelE) {
-    String pinId = DateTime.now().millisecondsSinceEpoch.toString();
-    GlobalKey pinKey = GlobalKey();
-    Pin newPin = Pin(
-      id: pinId,
-      key: pinKey,
+  void _addriverPin(Offset position, String labelT,String labelS,String labelE,int angel,bool isRiver) {
+    String riverPinId = DateTime.now().millisecondsSinceEpoch.toString();
+    GlobalKey riverPinKey = GlobalKey();
+    Riverpin newriverPin = Riverpin(
+      id: riverPinId,
+      key: riverPinKey,
       position: position,
       labelT: labelT,
       labelS: labelS,
@@ -626,52 +654,55 @@ class _InteractiveContainerState extends State<InteractiveContainer> {
       width: 0.0,
       height: 0.0,
       isVisible: true,
+      angel: angel,
+      isRiver: isRiver,
+      index: 0,
     );
 
     setState(() {
-      pins.add(newPin);
+      riverPins.add(newriverPin);
     });
 
-    widget.onPinsUpdated(pins);
-    _savePinToFirestore(newPin);
+    widget.onriverPinsUpdated(riverPins);
+    _saveriverPinToFirestore(newriverPin);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _updatePinDimensions(pinKey);
+      _updateriverPinDimensions(riverPinKey);
     });
   }
 
-  Future<void> _savePinToFirestore(Pin pin) async {
+  Future<void> _saveriverPinToFirestore(Riverpin riverPin) async {
     try {
-      await firestore.collection('pins').add(pin.toMap());
+      await firestore.collection('riverPins').add(riverPin.toMap());
     } catch (e) {
-      print('Error saving pin: $e');
+      print('Error saving riverPin: $e');
     }
   }
 
-  void _loadPinsFromFirestore() async {
+  void _loadriverPinsFromFirestore() async {
     try {
-      QuerySnapshot querySnapshot = await firestore.collection('pins').get();
+      QuerySnapshot querySnapshot = await firestore.collection('riverPins').get();
       setState(() {
-        pins = querySnapshot.docs.map((doc) => Pin.fromFirestore(doc)).toList();
+        riverPins = querySnapshot.docs.map((doc) => Riverpin.fromFirestore(doc)).toList();
       });
-      widget.onPinsUpdated(pins);
+      widget.onriverPinsUpdated(riverPins);
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        for (var pin in pins) {
-          _updatePinDimensions(pin.key);
+        for (var riverPin in riverPins) {
+          _updateriverPinDimensions(riverPin.key);
         }/////////////////////////////////////////////////////////////////////////////
       });
     } catch (e) {
-      print('Error loading pins: $e');
+      print('Error loading riverPins: $e');
     }
   }
 
-  void _updatePinDimensions(GlobalKey pinKey) {
-    final renderBox = pinKey.currentContext?.findRenderObject() as RenderBox?;
+  void _updateriverPinDimensions(GlobalKey riverPinKey) {
+    final renderBox = riverPinKey.currentContext?.findRenderObject() as RenderBox?;
     if (renderBox != null) {
       final size = renderBox.size;
       setState(() {
-        final pin = pins.firstWhere((pin) => pin.key == pinKey);
-        pin.width = size.width;
-        pin.height = size.height;
+        final riverPin = riverPins.firstWhere((riverPin) => riverPin.key == riverPinKey);
+        riverPin.width = size.width;
+        riverPin.height = size.height;
       });
     }
   }
