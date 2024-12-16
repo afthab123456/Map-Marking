@@ -4,9 +4,10 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:MapMarking/main.dart';
-import 'package:MapMarking/test.dart';
+import 'package:MapMarking/gameSelection.dart';
 import 'package:MapMarking/widgets/pin.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -83,18 +84,7 @@ class _GameAppState extends State<GameApp> {
         
         
           ),
-          Positioned(
-                      top: 20,
-                      left: 20,
-                      child: TextButton(
-                        style: TextButton.styleFrom(
-    iconColor: Colors.white, //  Text color
-    backgroundColor: const Color.fromARGB(0, 33, 149, 243), // Button background color
-  ),
-                        onPressed:() {Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => MainPage()),
-            );}, child: Icon(Icons.arrow_back_ios_new_rounded))),
+          
             if(instruct) Center(
   child: Container(
     height: 410, 
@@ -143,8 +133,13 @@ SizedBox(height: 20,),
                                     instruct = false;
                                   });
                                 }, 
-                                child: Text('Proceed',style: TextStyle(fontSize: 13),),
-                              ),
+                                child: Text('Proceed',style:  GoogleFonts.play(
+    textStyle: TextStyle(
+      fontSize: 15,
+      fontWeight: FontWeight.bold,
+      color: Color(0xFFc7e3da),
+      height: 1.2,
+    ),)),),
  
       ]
     ),
@@ -167,6 +162,7 @@ SizedBox(height: 20,),
   bool isViewResult = false; 
   List<Result> results = [];
   int correctCount = 0;
+  bool isRepeat = false;
   
 class GameInteractiveContainer extends StatefulWidget { 
   final bool instruct;
@@ -206,6 +202,10 @@ class _GameInteractiveContainerState extends State<GameInteractiveContainer> {
   @override
   void initState() {
     super.initState();
+    setState(() {
+      isViewResult = false;
+      isRepeat = false;
+    });
     _loadPinsFromFirestore();
     _start = widget.numOfPlaces * 
          (widget.level == "Easy" ? 15 : 
@@ -279,12 +279,14 @@ class _GameInteractiveContainerState extends State<GameInteractiveContainer> {
                 height: widget.screenHeight,
                 child: Stack(
                   children: [
-                    Image.asset(
-                      'assets/map_image.png',
+                    SvgPicture.asset(
+                      'assets/test.svg', 
                       width: double.infinity,
                       height: double.infinity,
                       fit: isProperRatio ? BoxFit.fitHeight : BoxFit.fitWidth,
-                    ),
+                      color: Colors.white,
+                    ), 
+                    
                     if(isViewResult)
                     for (var pin in selectedPins)
                       if (pin.isVisible)
@@ -389,6 +391,17 @@ class _GameInteractiveContainerState extends State<GameInteractiveContainer> {
                                     ),
                                   ),
                                 ),
+                                if (isRepeat)
+                                Text('Repeated', textAlign: TextAlign.center,
+                                  style: GoogleFonts.play( 
+                                    textStyle: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFFc7e3da),
+                                      fontStyle: FontStyle.italic,
+                                      height: 1.2,
+                                    ),
+                                  ),), 
                                 SizedBox(height: 15,), 
                                 Text(
                                   '$correctCount/${selectedPins.length}'.toUpperCase(), 
@@ -418,8 +431,8 @@ class _GameInteractiveContainerState extends State<GameInteractiveContainer> {
                                           children: [
                                             Container(
                                               margin: EdgeInsets.all(3),
-                                              width: 200,
-                                              height: 40,
+                                              width: 220,
+                                              height: 40, 
                                               decoration: BoxDecoration(
                                                 color: Color.fromARGB(255, 23, 26, 32),
                                                 borderRadius: BorderRadius.circular(5)
@@ -458,7 +471,10 @@ class _GameInteractiveContainerState extends State<GameInteractiveContainer> {
                                     ),
                                   ),
                                   SizedBox(height: 15), 
-                                  ElevatedButton(style: ElevatedButton.styleFrom(
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [ 
+                                    ElevatedButton(style: ElevatedButton.styleFrom(
                                       backgroundColor: Color.fromARGB(255, 29, 34, 40),
                                       foregroundColor: Colors.white,
                                       shadowColor: Colors.black,
@@ -470,11 +486,15 @@ class _GameInteractiveContainerState extends State<GameInteractiveContainer> {
           _updatePinDimensions(pin.key); 
         }
       });  
-                                  }, child: Text('        Display in Map        ',style: TextStyle(fontSize: 13),)),SizedBox(height: 10,),  
-                                  Row( 
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [ 
-                                    ElevatedButton(
+
+                                  }, child: Text('   View in Map   ',style:  GoogleFonts.play(
+    textStyle: TextStyle(
+      fontSize: 13,
+      fontWeight: FontWeight.bold,
+      color: Color(0xFFc7e3da),
+      height: 1.2,
+    ),)),),
+                                  SizedBox(width: 10,),  ElevatedButton(
                                     style: ElevatedButton.styleFrom( 
                                       backgroundColor: Color.fromARGB(255, 29, 34, 40),
                                       foregroundColor: Colors.white,
@@ -486,8 +506,43 @@ class _GameInteractiveContainerState extends State<GameInteractiveContainer> {
                                         MaterialPageRoute(builder: (context) => MainPage()),
                                       );
                                     },
-                                    child: Icon(Icons.home_rounded,size: 18,),
-                                  ), 
+                                    child: Icon(Icons.home_rounded,size: 18,color: Color(0xffc7e3da),),
+                                  ),  
+                                  
+                               
+                                  ],), 
+                                  SizedBox(height: 10,),
+                                  Row( 
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [ 
+                                    ElevatedButton(
+                                style: ElevatedButton.styleFrom( 
+                                  backgroundColor: Color.fromARGB(255, 29, 34, 40),
+                                  foregroundColor: Colors.white,
+                                  shadowColor: Colors.black,
+                                ), 
+                                onPressed: () {                                  
+                                  setState(() {
+                                    isRepeat = true;
+                                    isViewResult = false;
+                                    userPins = [];
+                                    isGameOver = false;
+                                    currentPinIndex = 0;
+                                  });
+                                  
+                                  _start = widget.numOfPlaces * 
+                                  (widget.level == "Easy" ? 15 : 
+                                  (widget.level == "Medium" ? 10 : 
+                                  (widget.level == "Hard" ? 5 : 1)));                             
+                                },
+                                
+                                child: Text('Repeat',style:  GoogleFonts.play(
+    textStyle: TextStyle(
+      fontSize: 13,
+      fontWeight: FontWeight.bold,
+      color: Color(0xFFc7e3da),
+      height: 1.2,
+    ),)),),
                                   SizedBox(width: 10,), 
                               ElevatedButton(
                                 style: ElevatedButton.styleFrom(
@@ -498,11 +553,18 @@ class _GameInteractiveContainerState extends State<GameInteractiveContainer> {
                                 onPressed: () {                                  
                                   Navigator.push(
                                         context,
-                                        MaterialPageRoute(builder: (context) => GameOptionsPage()), 
+                                        MaterialPageRoute(builder: (context) => GameOptionsPage(selectedDifficulty: widget.level,selectedLanguage: widget.Language,selectedMap: widget.Map,selectedPlaces: widget.numOfPlaces.toString(),)), 
                                       ); 
                                 },
-                                child: Text('Play Again',style: TextStyle(fontSize: 13),),
+                                child: Text('New Game',style:  GoogleFonts.play(
+    textStyle: TextStyle(
+      fontSize: 13,
+      fontWeight: FontWeight.bold,
+      color: Color(0xFFc7e3da),
+      height: 1.2,
+    ),))
                               ), 
+                              
                                   ],)
                               
                             ],
@@ -535,7 +597,7 @@ class _GameInteractiveContainerState extends State<GameInteractiveContainer> {
     : 'Loading...')
 
                       ),
-                    ),
+                    ), 
                     SizedBox(height: 5,), 
                     Row(children: [
                       Expanded(
@@ -583,9 +645,17 @@ class _GameInteractiveContainerState extends State<GameInteractiveContainer> {
                     ],)
                       ],),
                     )
-                  )
+                  ),
+                  if(isViewResult)
+                      Positioned(
+        right: 40, 
+        top: 20, 
+        child: CloseButton(onPressed: (){setState(() {
+          isViewResult = false; 
+        });},color: Colors.white,),),
           ],
-        ),
+        
+         ),
       ),
     );
   }

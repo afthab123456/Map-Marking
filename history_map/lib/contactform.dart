@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:motion/motion.dart';
 
 class ContactForm extends StatefulWidget {
   @override
@@ -15,9 +16,12 @@ class _ContactFormState extends State<ContactForm> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Container(
-        margin: EdgeInsets.only(left: 20,right: 20), 
-        height: 320,
+      child: IntrinsicHeight(child: 
+      Motion(
+        glare: GlareConfiguration(maxOpacity: 0,minOpacity: 0), 
+        shadow: ShadowConfiguration(opacity: 0), 
+        child: Container(
+        margin: EdgeInsets.only(left: 20,right: 20),
         padding: EdgeInsets.all(16.0),
         decoration: BoxDecoration(
           color: Color(0xff0f1114),  // Background color for the form
@@ -41,7 +45,7 @@ class _ContactFormState extends State<ContactForm> {
                   style: TextStyle(color: Color(0xFFc7e3da)),
                   decoration: InputDecoration(
                     labelText: 'Name',
-                    labelStyle: TextStyle(color: Color.fromARGB(255, 126, 173, 158)), // Match label color to border
+                    labelStyle: TextStyle(color: Color(0xFFc7e3da)), // Match label color to border
                     border: OutlineInputBorder(),
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: Color(0xFFc7e3da)),
@@ -120,27 +124,37 @@ class _ContactFormState extends State<ContactForm> {
           ),
         ),
       ),
-    );
+    )));
   }
 
-  void _submitForm() async {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-      
-      // Send data to Firestore
-      try {
-        await _firestore.collection('contacts').add({
-          'name': name,
-          'email': email,
-          'message': message,
-          'timestamp': FieldValue.serverTimestamp(),
-        });
-        // Show success message
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Message sent!')));
-      } catch (e) {
-        // Show error message
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to send message')));
-      }
+ void _submitForm() async {
+  if (_formKey.currentState!.validate()) {
+    _formKey.currentState!.save();
+    
+    // Send data to Firestore
+    try {
+      await _firestore.collection('contacts').add({
+        'name': name,
+        'email': email,
+        'message': message,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+
+      // Clear the form fields
+      _formKey.currentState!.reset(); // This clears the fields
+      setState(() {
+        name = '';
+        email = '';
+        message = '';
+      });
+
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Message sent!')));
+    } catch (e) {
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to send message')));
     }
   }
 }
+
+} 

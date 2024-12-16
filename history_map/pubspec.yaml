@@ -40,8 +40,16 @@ dependencies:
   url_launcher: ^6.3.1
   cached_network_image: ^3.4.1
   google_fonts: ^6.2.1
+  flutter_svg: ^2.0.16
+  path_drawing: ^1.0.1
+  visibility_detector: ^0.4.0+2
+  motion: ^2.0.1
+
+  
+
 
 dev_dependencies:
+  flutter_launcher_icons: "^0.14.1"
   flutter_test:
     sdk: flutter
 
@@ -54,7 +62,23 @@ dev_dependencies:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
-
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/fav-icon.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  web:
+    generate: true
+    image_path: "assets/fav-icon.png"
+    background_color: "#hexcode"
+    theme_color: "#hexcode"
+  windows:
+    generate: true
+    image_path: "assets/fav-icon.png"
+    icon_size: 48 # min:48, max:256, default: 48
+  macos:
+    generate: true
+    image_path: "assets/fav-icon.png"
 # The following section is specific to Flutter packages.
 flutter:
 

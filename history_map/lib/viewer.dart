@@ -1,8 +1,7 @@
-import 'dart:ui';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:MapMarking/main.dart';
 import 'package:MapMarking/marking_popup.dart';
@@ -20,7 +19,10 @@ class _ViewerAppState extends State<ViewerApp> {
   bool isMenu = false;
   bool isSettings = false;
   bool islanguageSelect = true;
+ bool isSearch = false;
+ bool isSearchR = true;
   String selectedLanguage = 'Tamil';
+  
   void toggleVisibility(int index) {
     setState(() {
       pins[index].isVisible = !pins[index].isVisible;
@@ -46,15 +48,54 @@ void showAllPins(List<Pin> pins) {
     pin.isVisible = isVisible;
   }
 }
+void showSpecificPin(List<Pin> pins, String pinId) {
+  for (var pin in pins) {
+    setState(() {
+      pin.isVisible = pin.id == pinId; 
+    });
+  }
+}
+
+String searchQuery = '';
+String LastSearch = '';
+
+TextEditingController _controller = TextEditingController();
   @override  
   Widget build(BuildContext context) {
+    List<Pin> filteredPins = pins.where((pin) {
+      return pin.labelT.toLowerCase().contains(searchQuery.toLowerCase()) ||
+          pin.labelS.toLowerCase().contains(searchQuery.toLowerCase()) ||
+          pin.labelE.toLowerCase().contains(searchQuery.toLowerCase());
+    }).toList();
+
+    // Sort by the position of the query (front matches first).
+    filteredPins.sort((a, b) {
+      int getPriority(String label) {
+        int index = label.toLowerCase().indexOf(searchQuery.toLowerCase());
+        return index == -1 ? 999 : index; // Assign a high value if no match.
+      }
+
+      int compareT = getPriority(a.labelT).compareTo(getPriority(b.labelT));
+      int compareS = getPriority(a.labelS).compareTo(getPriority(b.labelS));
+      int compareE = getPriority(a.labelE).compareTo(getPriority(b.labelE));
+
+      // Compare based on Tamil, Sinhala, then English.
+      return compareT != 0 ? compareT : (compareS != 0 ? compareS : compareE);
+    }); 
       double screenHeight = MediaQuery.of(context).size.height;
       double screenWidth = MediaQuery.of(context).size.width;
-      
+      if (searchQuery != LastSearch){
+        setState(() {
+          isSearchR = true;
+          
+        });
+      }
     return MaterialApp(
       home: Scaffold(
+        resizeToAvoidBottomInset: false,
         body:Stack(
           children: [
+             
 
               InteractiveContainer(
                 screenHeight: screenHeight,
@@ -68,8 +109,103 @@ void showAllPins(List<Pin> pins) {
             
         
         
-          ), 
-          if (!isSettings&&!islanguageSelect) 
+          ),
+          isSearch?
+        Column(
+        children: [
+          Center(child: Container(
+            margin: EdgeInsets.all(20), 
+            width: 300,child: 
+        TextField(
+          controller: _controller,
+  decoration: InputDecoration(
+    suffixIcon: searchQuery.isEmpty ?GestureDetector(onTap: () {       
+              setState(() {
+                isSearch = false; // Reset any search-related variables if needed
+              });
+      }, 
+      child: Padding(
+      padding: EdgeInsets.only(left: 10, right: 20), // Push the icon inward
+      child: Icon(Icons.close_rounded, color: Colors.white,), 
+   )):GestureDetector(
+      onTap: () {
+       _controller.clear(); // Clear the text in the TextField
+              setState(() {
+                searchQuery = ""; // Reset any search-related variables if needed
+              });
+              showAllPins(pins); 
+      },
+      child: Padding(
+      padding: EdgeInsets.only(left: 10, right: 20), // Push the icon inward
+      child: Icon(Icons.close_rounded, color: Colors.white,), 
+    ),), 
+    hintText: 'Search', 
+    hintStyle: TextStyle(color: const Color.fromARGB(255, 209, 209, 209)),
+    contentPadding: EdgeInsets.only(left: 20),
+     
+    filled: true,
+    fillColor: Color.fromARGB(255, 19, 21, 24), // Black background
+    
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(50), // Border radius of 50
+      borderSide: BorderSide(color: const Color.fromARGB(0, 47, 47, 47)),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(50),
+      borderSide: BorderSide(color: const Color.fromARGB(0, 12, 12, 12)),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(50),
+      borderSide: BorderSide(color: const Color.fromARGB(0, 17, 17, 17)),
+    ),
+  ),
+  style: TextStyle(color: Colors.white),
+  onChanged: (query) {
+    setState(() {
+      searchQuery = query;
+    });
+  },
+  onTap: () {
+    // When the field is tapped, the hint will disappear (optional setup)
+  },
+),
+),  
+          ),  !searchQuery.isEmpty
+                && !filteredPins.isEmpty && isSearchR
+                    ?  Center(child: Container(
+                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(20),color: Color.fromARGB(255, 19, 21, 24)),
+                        
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(
+                            maxHeight: 300,
+                            maxWidth: 300, 
+                          ),
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: filteredPins.length,
+                            itemBuilder: (context, index) {
+                              final pin = filteredPins[index];
+                              return   ListTile(onTap: () {
+                                setState(() {
+                                  isSearchR = false;
+                                  LastSearch = searchQuery;
+                                });
+       showSpecificPin(pins,pin.id);
+      },
+
+      
+                                
+                                leading: Icon(Icons.location_pin, color: Colors.red,),  
+                                title: Text(pin.labelE,style: TextStyle(color: Colors.white,fontSize: 16),),
+                                subtitle: Text('${pin.labelT} | ${pin.labelS}',style: TextStyle(color: Colors.white,fontSize: 10),),
+                              );   
+                            },
+                          ),
+                        ),
+                      ), ):SizedBox(),
+           
+        ],
+      ):SizedBox(),   if (!isSettings&&!islanguageSelect&&!isSearch) 
             Positioned(
                       top: 20,
                       left: 20,
@@ -82,8 +218,8 @@ void showAllPins(List<Pin> pins) {
               context,
               MaterialPageRoute(builder: (context) => MainPage()),
             );}, child: Icon(Icons.arrow_back_ios_new_rounded ))),
-            if(!isSettings&&!islanguageSelect)
-            Positioned(
+            if(!isSettings&&!islanguageSelect&&!isSearch)
+            Positioned( 
                       top: 20,
                       right: 20,
                       child: TextButton(
@@ -94,6 +230,19 @@ void showAllPins(List<Pin> pins) {
                         onPressed:() {setState(() {
                                   isSettings = true;
                                 });}, child: Icon(Icons.settings_rounded ))),
+                                if(!isSettings&&!islanguageSelect&&!isSearch)
+            Positioned(
+                      top: 20,
+                      right: 80, 
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+    iconColor: Colors.white, //  Text color
+    backgroundColor: const Color.fromARGB(0, 33, 149, 243), // Button background color
+  ),
+                        onPressed:() {setState(() {
+                                  isSearch = true;
+                                  isSearchR = true;
+                                });}, child: Icon(Icons.search_rounded ))),
               isSettings ? Center(
   child: Stack(
     children: [
@@ -132,7 +281,7 @@ void showAllPins(List<Pin> pins) {
             SizedBox(height: 15),
             Wrap(
               alignment: WrapAlignment.spaceBetween,  
-              children: ['Tamil', 'Sinhala', 'English'].map((language) {
+              children: ['Tamil', 'Sinhala','English'].map((language) {
                 bool isSelected = selectedLanguage == language; // Track selection
                 return Padding(
                   padding: const EdgeInsets.only(right: 10.0,top: 10),
@@ -240,8 +389,8 @@ void showAllPins(List<Pin> pins) {
   ),
 ):SizedBox(),
  if(islanguageSelect) Center(
-  child: Container(
-    height: 250, 
+  child: IntrinsicHeight(child: 
+  Container(   
     width: 200, 
     decoration: BoxDecoration(
       color:Color.fromARGB(255, 19, 21, 24),
@@ -249,6 +398,7 @@ void showAllPins(List<Pin> pins) {
     ), 
     padding: EdgeInsets.all(20),
     child: Column(
+      mainAxisAlignment: MainAxisAlignment.center, 
       children: [
         Text('Select Language', style: GoogleFonts.play( 
                                     textStyle: TextStyle(
@@ -261,8 +411,8 @@ void showAllPins(List<Pin> pins) {
                                   SizedBox(height: 20,), 
          Column(
               crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.start,   
-              children: ['Tamil', 'Sinhala', 'English'].map((language) {
+              mainAxisAlignment: MainAxisAlignment.center,    
+              children: ['Tamil', 'Sinhala','English' ].map((language) {
                 bool isSelected = selectedLanguage == language; // Track selection
                 return Padding(
                   padding: const EdgeInsets.only(right: 10.0,top: 3), 
@@ -300,8 +450,8 @@ void showAllPins(List<Pin> pins) {
            
       ],
     ),
-  ),
- )
+  ), 
+ ))
 ])));
 
    
@@ -367,20 +517,22 @@ class _InteractiveContainerState extends State<InteractiveContainer> {
     double driftX = (widget.screenWidth - (widget.screenHeight / 2)) / 2;
     double driftY = (widget.screenHeight - (widget.screenWidth * 2)) / 2; 
 
-    return GestureDetector(
+    return GestureDetector( 
+      
       onDoubleTapDown: (details) async {
         final renderBox = 
             containerKey.currentContext?.findRenderObject() as RenderBox?;
         if (renderBox != null) {clickPosition = renderBox.globalToLocal(details.globalPosition);
           double px = ((clickPosition.dx)-(isProperRatio ? driftX : 0))/scaleX; 
           double py = ((clickPosition.dy)-(!isProperRatio ? driftY : 0))/scaleY;
-          final label = await showLabelInputDialog(context);
-          if (label != null && label.isNotEmpty) {
-            print('Entered Label: $label');
-            _addPin(Offset(px, py), label,'sinhala$tindex','english$tindex');
-          }
+          //Uncomment this to add new places
+          //final label = await showLabelInputDialog(context);
+          //if (label != null && label.isNotEmpty) {
+          //  print('Entered Label: $label');
+          //  _addPin(Offset(px, py), label,'sinhala$tindex','english$tindex');
+          //}
           
-          tindex ++; 
+          //tindex ++; 
         }
       },
       child: MouseRegion(
@@ -408,11 +560,12 @@ class _InteractiveContainerState extends State<InteractiveContainer> {
                 height: widget.screenHeight,
                 child: Stack(
                   children: [
-                    Image.asset(
-                      'assets/map_image.png',
+                    SvgPicture.asset(
+                      'assets/test.svg', 
                       width: double.infinity,
                       height: double.infinity,
                       fit: isProperRatio ? BoxFit.fitHeight : BoxFit.fitWidth,
+                      color: Colors.white,
                     ),
                     for (var pin in pins)
                       if (pin.isVisible)
