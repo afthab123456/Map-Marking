@@ -35,3 +35,4 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_HISTORYMAP_F4E49 }}
           channelId: live
           projectId: historymap-f4e49
+          entryPoint: history_map  # Point to the directory where firebase.json is located
