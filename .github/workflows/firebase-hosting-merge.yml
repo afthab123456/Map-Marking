@@ -6,15 +6,31 @@ on:
   push:
     branches:
       - main
+
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     steps:
+      # Checkout the repository
       - uses: actions/checkout@v4
-      - run: "npm "
+      
+      # Set up Flutter
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.5'
+
+      # Install Flutter dependencies
+      - run: flutter pub get
+
+      # Build the Flutter web app with CanvasKit renderer
+      - run: flutter build web --release --web-renderer canvaskit
+
+      # Deploy to Firebase Hosting
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_HISTORYMAP_F4E49 }}
           channelId: live
           projectId: historymap-f4e49
+
