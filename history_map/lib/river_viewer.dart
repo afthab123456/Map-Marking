@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:MapMarking/remap.dart';
-import 'package:MapMarking/test11.dart';
+import 'package:MapMarking/GridOverlayForTheRiverGame.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -131,13 +131,17 @@ TextEditingController _controller = TextEditingController();
         
         
           ),
-          isSearch?
+          
         Column(
         children: [
           Center(child: Container(
             margin: EdgeInsets.all(20), 
             width: 300,child: 
-        TextField(
+        AnimatedOpacity(
+                              opacity: isSearch ? 1.0 : 0.0,
+                              duration: Duration(milliseconds: 500),
+                              curve: Curves.easeInOut,
+                              child:TextField(
           controller: _controller,
   decoration: InputDecoration(
     suffixIcon: searchQuery.isEmpty ?GestureDetector(onTap: () {       
@@ -190,7 +194,7 @@ TextEditingController _controller = TextEditingController();
     // When the field is tapped, the hint will disappear (optional setup)
   },
 ),
-),  
+), ) 
           ),  !searchQuery.isEmpty
                 && !filteredriverPins.isEmpty && isSearchR
                     ?  Center(child: Container(
@@ -226,7 +230,7 @@ TextEditingController _controller = TextEditingController();
                       ), ):SizedBox(),
            
         ],
-      ):SizedBox(),   if (!isSettings&&!islanguageSelect&&!isSearch) 
+      ),  if (!isSettings&&!islanguageSelect&&!isSearch) 
             Positioned(
                       top: 20,
                       left: 20,
@@ -237,7 +241,7 @@ TextEditingController _controller = TextEditingController();
   ),
                         onPressed:() {Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => MainPage()),
+              MaterialPageRoute(builder: (context) => MyApp()),
             );}, child: Icon(Icons.arrow_back_ios_new_rounded ))),
             if(!isSettings&&!islanguageSelect&&!isSearch)
             Positioned( 

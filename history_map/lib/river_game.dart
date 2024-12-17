@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:MapMarking/test11.dart';
+import 'package:MapMarking/GridOverlayForTheRiverGame.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -524,7 +524,7 @@ class _GameInteractiveContainerState extends State<GameInteractiveContainer> {
                                     onPressed: () {
                                       Navigator.push(
                                         context,
-                                        MaterialPageRoute(builder: (context) => MainPage()),
+                                        MaterialPageRoute(builder: (context) => MyApp()),
                                       );
                                     },
                                     child: Icon(Icons.home_rounded,size: 18,color: Color(0xffc7e3da),),

@@ -1,12 +1,8 @@
 import 'package:MapMarking/contactform.dart';
-import 'package:MapMarking/gameSelection.dart';
-import 'package:MapMarking/river_viewer.dart';
-import 'package:MapMarking/viewer.dart';
 import 'package:MapMarking/visitor_count.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,22 +25,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
       home: Scaffold(
-        backgroundColor: Color(0xff0b0d0f),        
+        backgroundColor: Color(0xff0b0d0f), 
         body: MainPage(),
       ),
     );
   }
 }
-void _launchURL() async {
-  const url = 'https://github.com/afthab123456';
-  if (await canLaunch(url)) {
-    await launch(url);
-  } else {
-    throw 'Could not launch $url';
-  }
-}
+
 class MainPage extends StatefulWidget {
   @override
   _MainPageState createState() => _MainPageState();
@@ -65,70 +53,72 @@ class _MainPageState extends State<MainPage> {
   bool isFooterTextVisible = false;
   bool isConstruction = false; 
   final ScrollController _scrollController = ScrollController();
-
   @override
-  void initState() {
-    super.initState();
-    _scrollController.addListener(() async {
-      if ((_scrollController.offset > (MediaQuery.of(context).size.height) - 200) && !isLineVisible) {
-        setState(() {
-          isAboutVisible = true;
-        });
-        await Future.delayed(Duration(milliseconds: 500));
-        setState(() {
-          isLineVisible = true;
-        });
+  void initState()  {
+      super.initState();
+      
+      _scrollController.addListener(() async {    
+        if ((_scrollController.offset > (MediaQuery.of(context).size.height) - 200) && !isLineVisible) {
+          setState(() {
+            isAboutVisible = true;
+          }); 
+          await Future.delayed(Duration(milliseconds: 500));
+          setState(() {
+            isLineVisible = true;
+          });
+        }
+        if ((_scrollController.offset > (MediaQuery.of(context).size.height * 1.5 )) && !isContainer1Visible) {
+          setState(() {
+            isContainer1Visible = true;
+          }); 
+          await Future.delayed(Duration(milliseconds: 800));
+          setState(() {
+            isContainer1TextVisible = true;
+          });
+        }
+        if ((_scrollController.offset > (MediaQuery.of(context).size.height * 2.4 )) && !isContainer2Visible) {
+          setState(() {
+            isContainer2Visible = true;
+          });
+          await Future.delayed(Duration(milliseconds: 800)); 
+          setState(() {
+            isContainer2TextVisible = true;
+          });
+        }
+        if ((_scrollController.offset > (MediaQuery.of(context).size.height * 3.2 )) && !isContainer3Visible) {
+          setState(() {
+            isContainer3Visible = true;
+          }); 
+          await Future.delayed(Duration(milliseconds: 800)); 
+          setState(() {
+            isContainer3TextVisible = true;
+          });
+        }
+        if ((_scrollController.offset > (MediaQuery.of(context).size.height * 4.8)) && !isVisitVisible) {
+          setState(() { 
+            isVisitVisible = true;
+          });       
+        }
+        if ((_scrollController.offset > (MediaQuery.of(context).size.height * 5.8)) && !isContactVisible) {
+          setState(() {
+            isContactVisible = true; 
+          });       
+        }
+        if ((_scrollController.offset > (MediaQuery.of(context).size.height * 6.3)) && !isFooterVisible) {
+            setState(() {
+              isFooterVisible = true;
+            }
+          );       
+        }
       }
-      if ((_scrollController.offset > (MediaQuery.of(context).size.height * 1.5)) && !isContainer1Visible) {
-        setState(() {
-          isContainer1Visible = true;
-        });
-        await Future.delayed(Duration(milliseconds: 800));
-        setState(() {
-          isContainer1TextVisible = true;
-        });
-      }
-      if ((_scrollController.offset > (MediaQuery.of(context).size.height * 2.4)) && !isContainer2Visible) {
-        setState(() {
-          isContainer2Visible = true;
-        });
-        await Future.delayed(Duration(milliseconds: 800));
-        setState(() {
-          isContainer2TextVisible = true;
-        });
-      }
-      if ((_scrollController.offset > (MediaQuery.of(context).size.height * 3.2)) && !isContainer3Visible) {
-        setState(() {
-          isContainer3Visible = true;
-        });
-        await Future.delayed(Duration(milliseconds: 800));
-        setState(() {
-          isContainer3TextVisible = true;
-        });
-      }
-      if ((_scrollController.offset > (MediaQuery.of(context).size.height * 4.8)) && !isVisitVisible) {
-        setState(() {
-          isVisitVisible = true;
-        });
-      }
-      if ((_scrollController.offset > (MediaQuery.of(context).size.height * 5.8)) && !isContactVisible) {
-        setState(() {
-          isContactVisible = true;
-        });
-      }
-      if ((_scrollController.offset > (MediaQuery.of(context).size.height * 6.3)) && !isFooterVisible) {
-        setState(() {
-          isFooterVisible = true;
-        });
-      }
-    });
+    );
   }
 
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
+@override
+void dispose() {
+  _scrollController.dispose();
+  super.dispose();
+}
 
   @override
   Widget build(BuildContext context) {
@@ -408,10 +398,7 @@ class _MainPageState extends State<MainPage> {
                                                             children: [
                                                               ElevatedButton(
                                                                 onPressed: () {
-                                                                  Navigator.push(
-                                                                    context,
-                                                                    MaterialPageRoute(builder: (context) => ViewerApp()),
-                                                                  );
+                                                                  // Navigate to ViewerApp
                                                                 },
                                                                 style: ElevatedButton.styleFrom(
                                                                   backgroundColor: Color.fromARGB(255, 38, 91, 75),
@@ -429,10 +416,7 @@ class _MainPageState extends State<MainPage> {
                                                               SizedBox(width: 15),
                                                               ElevatedButton(
                                                                 onPressed: () {
-                                                                  Navigator.push(
-                                                                    context,
-                                                                    MaterialPageRoute(builder: (context) => GameOptionsPage(selectedMap: 'Srilanka - Places',selectedDifficulty: 'Easy',selectedPlaces: '5',selectedLanguage: 'Tamil',)),
-                                                                  );
+                                                                  // Navigate to GameOptionsPage
                                                                 },
                                                                 style: ElevatedButton.styleFrom(
                                                                   backgroundColor: Color.fromARGB(255, 29, 34, 40),
@@ -452,10 +436,7 @@ class _MainPageState extends State<MainPage> {
                                                             children: [
                                                               ElevatedButton(
                                                                 onPressed: () {
-                                                                  Navigator.push(
-                                                                    context,
-                                                                    MaterialPageRoute(builder: (context) => ViewerApp()),
-                                                                  );
+                                                                  // Navigate to ViewerApp
                                                                 },
                                                                 style: ElevatedButton.styleFrom(
                                                                   backgroundColor: Color.fromARGB(255, 38, 91, 75),
@@ -473,10 +454,7 @@ class _MainPageState extends State<MainPage> {
                                                               SizedBox(height: 15),
                                                               ElevatedButton(
                                                                 onPressed: () {
-                                                                  Navigator.push(
-                                                                    context,
-                                                                    MaterialPageRoute(builder: (context) => GameOptionsPage(selectedMap: 'Srilanka - Places',selectedDifficulty: 'Easy',selectedPlaces: '5',selectedLanguage: 'Tamil',)),
-                                                                  );
+                                                                  // Navigate to GameOptionsPage
                                                                 },
                                                                 style: ElevatedButton.styleFrom(
                                                                   backgroundColor: Color.fromARGB(255, 29, 34, 40),
@@ -601,10 +579,7 @@ class _MainPageState extends State<MainPage> {
                                                       children: [
                                                         ElevatedButton(
                                                           onPressed: () {
-                                                            Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(builder: (context) => RiversViewerApp()),
-                                                            );
+                                                            // Navigate to ViewerApp
                                                           },
                                                           style: ElevatedButton.styleFrom(
                                                             backgroundColor: Color.fromARGB(255, 38, 91, 75),
@@ -622,10 +597,7 @@ class _MainPageState extends State<MainPage> {
                                                         SizedBox(width: 15),
                                                         ElevatedButton(
                                                           onPressed: () {
-                                                            Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(builder: (context) => GameOptionsPage(selectedMap: 'Srilanka - Water Bodies',selectedDifficulty: 'Easy',selectedPlaces: '5',selectedLanguage: 'Tamil',)),
-                                                            );
+                                                            // Navigate to GameOptionsPage
                                                           },
                                                           style: ElevatedButton.styleFrom(
                                                             backgroundColor: Color.fromARGB(255, 29, 34, 40),
@@ -645,10 +617,7 @@ class _MainPageState extends State<MainPage> {
                                                       children: [
                                                         ElevatedButton(
                                                           onPressed: () {
-                                                            Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(builder: (context) => RiversViewerApp()),
-                                                            );
+                                                            // Navigate to ViewerApp
                                                           },
                                                           style: ElevatedButton.styleFrom(
                                                             backgroundColor: Color.fromARGB(255, 38, 91, 75),
@@ -666,10 +635,7 @@ class _MainPageState extends State<MainPage> {
                                                         SizedBox(height: 15),
                                                         ElevatedButton(
                                                           onPressed: () {
-                                                            Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(builder: (context) => GameOptionsPage(selectedMap: 'Srilanka - Water Bodies',selectedDifficulty: 'Easy',selectedPlaces: '5',selectedLanguage: 'Tamil',)),
-                                                            );
+                                                            // Navigate to GameOptionsPage
                                                           },
                                                           style: ElevatedButton.styleFrom(
                                                             backgroundColor: Color.fromARGB(255, 29, 34, 40),

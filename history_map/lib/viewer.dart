@@ -214,9 +214,9 @@ TextEditingController _controller = TextEditingController();
     iconColor: Colors.white, //  Text color
     backgroundColor: const Color.fromARGB(0, 33, 149, 243), // Button background color
   ),
-                        onPressed:() {Navigator.push(
+                        onPressed:() {Navigator.push( 
               context,
-              MaterialPageRoute(builder: (context) => MainPage()),
+              MaterialPageRoute(builder: (context) => MyApp()),
             );}, child: Icon(Icons.arrow_back_ios_new_rounded ))),
             if(!isSettings&&!islanguageSelect&&!isSearch)
             Positioned( 

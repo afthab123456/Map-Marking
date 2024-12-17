@@ -503,7 +503,7 @@ class _GameInteractiveContainerState extends State<GameInteractiveContainer> {
                                     onPressed: () {
                                       Navigator.push(
                                         context,
-                                        MaterialPageRoute(builder: (context) => MainPage()),
+                                        MaterialPageRoute(builder: (context) => MyApp()),
                                       );
                                     },
                                     child: Icon(Icons.home_rounded,size: 18,color: Color(0xffc7e3da),),

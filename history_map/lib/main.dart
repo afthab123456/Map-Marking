@@ -1,15 +1,11 @@
+import 'package:MapMarking/contactform.dart';
+import 'package:MapMarking/gameSelection.dart';
 import 'package:MapMarking/river_viewer.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:MapMarking/viewer.dart';
+import 'package:MapMarking/visitor_count.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:MapMarking/footer.dart';
-import 'package:MapMarking/game.dart';
-import 'package:MapMarking/gameSelection.dart';
-import 'package:MapMarking/contactform.dart';
-import 'package:MapMarking/underdev.dart';
-import 'package:MapMarking/viewer.dart';
-import 'package:MapMarking/visitor_count.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 Future<void> main() async {
@@ -27,24 +23,22 @@ Future<void> main() async {
   );
   runApp(MyApp());
 }
+ 
 
-class MyApp extends StatefulWidget {
-  @override
-  _MyAppState createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: MainPage(),
+      home: Scaffold(
+        backgroundColor: Color(0xff0b0d0f), 
+        body: MainPage(),
+      ),
     );
   }
 }
 
 void _launchURL() async {
-  const url = 'https://github.com/afthab123456'; // Replace with your GitHub URL
+  const url = 'https://github.com/afthab123456';
   if (await canLaunch(url)) {
     await launch(url);
   } else {
@@ -58,603 +52,723 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  ScrollController _scrollController = ScrollController();
+  bool isLineVisible = false;  
+  bool isAboutVisible = false;
+  bool isContainer1Visible = false;
+  bool isContainer1TextVisible = false; 
+  bool isContainer2Visible = false;
+  bool isContainer2TextVisible = false;
+  bool isContainer3Visible = false;
+  bool isContainer3TextVisible = false; 
+  bool isVisitVisible = false;
+  bool isContactVisible = false;
+  bool isFooterVisible = false;
+  bool isFooterTextVisible = false;
+  bool isConstruction = false; 
+  final ScrollController _scrollController = ScrollController();
   @override
-  void initState() {
+  void initState()  {
     super.initState();
-    _scrollController.addListener(_scrollListener);
-  }
-  
-void _scrollListener() {
-  double position = _scrollController.position.pixels; // Current scroll position
-  double maxScroll = _scrollController.position.maxScrollExtent; // Max scrollable area
-  double screenHeight = MediaQuery.of(context).size.height;
-
-  if (position < screenHeight) {
     
-    
-  } 
+    _scrollController.addListener(() async {    
+      if ((_scrollController.offset > (MediaQuery.of(context).size.height) - 200) && !isLineVisible) {
+        setState(() {
+          isAboutVisible = true;
+        }); 
+        await Future.delayed(Duration(milliseconds: 500));
+        setState(() {
+          isLineVisible = true;
+        });
+      }
+      if ((_scrollController.offset > (MediaQuery.of(context).size.height * 1.5 )) && !isContainer1Visible) {
+        setState(() {
+          isContainer1Visible = true;
+        }); 
+        await Future.delayed(Duration(milliseconds: 800));
+        setState(() {
+          isContainer1TextVisible = true;
+        });
+      }
+      if ((_scrollController.offset > (MediaQuery.of(context).size.height * 2.4 )) && !isContainer2Visible) {
+        setState(() {
+          isContainer2Visible = true;
+        });
+        await Future.delayed(Duration(milliseconds: 800)); 
+        setState(() {
+          isContainer2TextVisible = true;
+        });
+      }
+      if ((_scrollController.offset > (MediaQuery.of(context).size.height * 3.2 )) && !isContainer3Visible) {
+        setState(() {
+          isContainer3Visible = true;
+        }); 
+        await Future.delayed(Duration(milliseconds: 800)); 
+        setState(() {
+          isContainer3TextVisible = true;
+        });
+      }
+      if ((_scrollController.offset > (MediaQuery.of(context).size.height * 4.8)) && !isVisitVisible) {
+        setState(() { 
+          isVisitVisible = true;
+        });       
+      }
+      if ((_scrollController.offset > (MediaQuery.of(context).size.height * 5.8)) && !isContactVisible) {
+        setState(() {
+          isContactVisible = true; 
+        });       
+      }
+      if ((_scrollController.offset > (MediaQuery.of(context).size.height * 6.3)) && !isFooterVisible) {
+        setState(() {
+          isFooterVisible = true;
+        });       
+      }
+    }
+  );
+}
 
-  // Additional logic for when the scroll reaches the end (if you want to implement infinite scrolling or similar)
-  if (position == maxScroll) {
-    print("Reached the end of the scrollable area");
-  }
-} 
+@override
+void dispose() {
+  _scrollController.dispose();
+  super.dispose();
+}
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-   return Scaffold(
-      body: SingleChildScrollView(
-        controller: _scrollController,
-        child: Column(
-          children: [
-            Container(
-              height: MediaQuery.of(context).size.height,
-              child: Stack(
-                children: [
-                  Row(
+    return SingleChildScrollView(
+      controller: _scrollController,
+      child: Column(
+        children: [
+          Container(
+            height: screenHeight * 2,
+            width: screenWidth,
+            child: Stack(
+              children: [                
+                Container(
+                  width: screenWidth,
+                  height: screenHeight,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Expanded(
-                        child: Container(color: Color(0xFF20242a)),
-                      ),
-                      
-                    ],
-                  ),
-                  Positioned(
-                    left: screenWidth > 500 ? screenWidth / 2 : 0,
-                    top: 30,
-                    child: Text(
-                      'Map\nMarking'.toUpperCase(),
-                      style: GoogleFonts.archivoBlack(
-                        textStyle: TextStyle(
-                          color: screenWidth > 500 ? Color.fromARGB(255, 38, 44, 51) : const Color.fromARGB(255, 30, 53, 55),
-                          fontSize: screenWidth > 500 ? 100 : 80, 
-                          height: 1,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Center(
-                    child: Image.asset(
-                      "assets/landing_map.png",
-                      height: MediaQuery.of(context).size.height,
-                    ),
-                  ),
-                  if (screenWidth > 500)
-                  Positioned(
-                    top: -180,
-                    right: -180, 
-                    child: Image.asset('assets/green_circle.png',height: 380,),
-                  ),
-                  
-                  
-                  Container(width: screenWidth,height: screenHeight,color: const Color.fromARGB(165, 0, 0, 0),),
-                  if (screenWidth > 500) 
-                  Positioned(
-                    top: 50,
-                    left: screenWidth > 500 ? 50 : 30,
-                    child: Icon(Icons.location_pin, size: 50, color: Color.fromARGB(255, 204, 20, 20)),
-                  ),
-                  
-                  if (screenWidth < 500)
-                    Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.location_pin, size: 50, color: Color.fromARGB(255, 204, 20, 20)),
-                          Text(
-                            'Map\nMarking'.toUpperCase(),
+                      Icon(Icons.location_pin,color: Colors.red,size: screenWidth > 700 ? 80 : 50,), 
+                      Padding(padding: EdgeInsets.all(20),child:  Text(
+                            'Map Marking'.toUpperCase(),
                             textAlign: TextAlign.center,
                             style: GoogleFonts.poppins(                               
                               textStyle: TextStyle(
-                                fontSize: 40,
+                                fontSize:screenWidth > 700 ? 80 : 50,
                                 fontWeight: FontWeight.bold,
                                 color: Color(0xFFc7e3da),
-                                fontStyle: FontStyle.italic,
                                 height: 1.2,
                               ),
+                            ), 
+                          ),),
+                      TextButton(
+                        style: TextButton.styleFrom(
+                        side: BorderSide(color: Color(0xFFc7e3da)),
+                        padding: EdgeInsets.symmetric(vertical:screenWidth > 700 ? 12 : 0, horizontal:screenWidth > 700 ? 24 : 14), // Adjust padding as needed
+                        foregroundColor: Colors.white,
+                        overlayColor: Colors.transparent,), 
+                        onPressed: () {_launchURL();}, 
+                        child:  Text(
+                          'Developed by @ Afthab Ahamed'.toUpperCase(),
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.dmSans(                               
+                            textStyle: TextStyle( 
+                              fontSize:screenWidth > 700 ? 12 : 10, 
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFFc7e3da),
+                              height: 1.2,
                             ),
                           ),
-                          GestureDetector(
-                            onTap:() { 
-                              _launchURL();
-                            },
-                            child: Container(
-                              width:  250,
-                              height: 40,     
-                              margin: EdgeInsets.only(top: 20),                        
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                color: Color.fromARGB(204, 18, 44, 36),
-                                borderRadius: BorderRadius.circular(12)
+                        ),
+                      ) 
+                    ],
+                  ),
+                ), 
+                Positioned(
+                  top: screenHeight,
+                  child:Container(
+                    height: screenHeight,
+                    width: screenWidth,
+                    child: Container(
+                      padding: EdgeInsets.all(30),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center, 
+                          children: [
+                            SizedBox(height: 40),
+                            AnimatedOpacity(
+                              opacity: isAboutVisible ? 1.0 : 0.0,
+                              duration: Duration(milliseconds: 500),
+                              curve: Curves.easeInOut,
+                              child: Text(
+                                'About This Website',
+                                style: GoogleFonts.poppins(
+                                  textStyle: TextStyle(
+                                    fontSize: screenWidth > 500 ? 35 : 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFFc7e3da),
+                                    fontStyle: FontStyle.italic,
+                                    height: 1.2,                  
+                                  ),
+                                ),
+                                textAlign: TextAlign.center,
+                              ), 
+                            ), 
+                            SizedBox(height: 16),
+                            AnimatedOpacity(
+                              opacity: isAboutVisible ? 1.0 : 0.0,
+                              duration: Duration(milliseconds: 500),
+                              curve: Curves.easeInOut,
+                              child: Container(
+                                width: 800,
+                                child: Text(                
+                                  "MapMarking is an innovative platform designed to help GCE Ordinary Level students excel in MapMarking. Recognizing the lack of resources in this area of the history syllabus, we've created a fun, interactive space where students can explore marked maps and learn through engaging games. Our platform transforms MapMarking into a game-like experience, making studying both enjoyable and effective. Whether you're preparing for exams or just practicing, our site makes learning history more interactive and exciting.", 
+                                  style: TextStyle(
+                                    fontSize: screenWidth > 500 ? 16 : 13,
+                                    color: Colors.white70,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
                               ),
-                              child: Text('Developed by @Afthab Ahamed'.toUpperCase(),style:TextStyle(fontSize: 13,color: Colors.white),
-                              ),
+                            ),
+                            SizedBox(height: 20), 
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center, 
+                              children: [               
+                                AnimatedContainer(
+                                  duration: Duration(milliseconds: 500),
+                                  curve: Curves.easeInOut,
+                                  height: isLineVisible ? 4 : 0,
+                                  width: isLineVisible ? (screenWidth > 500 ? 200 : 80) : 0,
+                                  decoration: BoxDecoration(
+                                    color: Color.fromARGB(255, 38, 91, 75),
+                                    borderRadius: BorderRadius.circular(20), 
+                                  ),
+                                ), 
+                                SizedBox(width: 10,), 
+                                AnimatedOpacity(
+                                  opacity: isLineVisible ? 1.0 : 0.0,
+                                  duration: Duration(milliseconds: 500),
+                                  curve: Curves.easeInOut,
+                                  child: Container(
+                                    width: 4,
+                                    height: 4, 
+                                    decoration: BoxDecoration(
+                                      color: Color.fromARGB(255, 38, 91, 75),
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ), 
+                            SizedBox(height: 15), 
+                          ],
+                        ),
+                      ),      
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: -80,  
+                  left: -80,
+                  child: AnimatedContainer(
+                    duration: Duration(milliseconds: 500),
+                    width:screenWidth > 600 ? 200 : 100,
+                    height: screenWidth > 600 ? 200 : 100,
+                    decoration: BoxDecoration( 
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color:  Color(0xff265b4b).withOpacity(0.9),
+                          blurRadius: 400,
+                          spreadRadius: 100,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: screenHeight - 200,
+                  right: -100,
+                  child: Container(
+                    width: screenWidth > 600 ? 200 : 100,
+                    height: screenWidth > 600 ? 200 : 100,
+                    decoration: BoxDecoration(  
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color(0xff265b4b).withOpacity(0.9),
+                          blurRadius: 400,
+                          spreadRadius: 100,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            height: screenHeight,
+            width: screenWidth, 
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [              
+                Stack(
+                  children: [
+                    Positioned(
+                      bottom: 0,
+                      child: AnimatedOpacity(
+                        opacity: isContainer1TextVisible ? 1.0 : 0.0, // Fully visible or fully transparent
+                        duration: Duration(milliseconds: 300), // Animation duration
+                        curve: Curves.easeInOut, // Animation curve
+                        child: 
+                        Container(
+                          width: screenWidth * .9,
+                          height: screenHeight*.65,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20)),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: Image.asset(
+                              'assets/dot_mapSL.png',
+                              fit: BoxFit.fitHeight,
                             ),
                           )
-                        ],
-                      ),
-                    ), 
-                   
-                  if (screenWidth > 500)
-                  Positioned(
-                    top: 100,
-                    left:  60, 
-                    child: Text(
-                      'Map\nMarking'.toUpperCase(),
-                      style: GoogleFonts.poppins( 
-                        textStyle: TextStyle(
-                          fontSize: screenWidth > 500 ? 55 : 40,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFFc7e3da),
-                          fontStyle: FontStyle.italic,
-                          height: 1.2,
-                        ),
-                      ),
-                    ),
-                  ),
-                  if (screenWidth > 500)
-                  Positioned( 
-                    bottom: 180,
-                    child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Stack(
-                            alignment: Alignment.center,
-                            clipBehavior: Clip.none,
-                            children: [
-                              Container( 
-                                width: screenWidth > 1000 ? 200 : 150,
-                                height: screenWidth > 1000 ? 130 : 100,                               
-                                decoration: BoxDecoration(
-                                  color: Color(0xff2b3038),
-                                  borderRadius: BorderRadius.only(topRight: Radius.circular(25),bottomRight: Radius.circular(25))
-                                ),
-                                alignment: Alignment.center,
-                              ),
-                              Container(
-                                width:  screenWidth > 1000 ? 200 : 150,
-                                height: screenWidth > 1000 ? 130 : 100, 
-                                
-                                decoration: BoxDecoration(
-                                                        color: const Color.fromARGB(165, 0, 0, 0),
-                                                        borderRadius: BorderRadius.only(topRight: Radius.circular(25),bottomRight: Radius.circular(25))
+                       ), 
+                      ), 
+                    ),  
+                    AnimatedContainer( 
+                      duration: Duration(milliseconds: 800),
+                      curve: Curves.ease,
+                      width:isContainer1Visible ? screenWidth * .9 : 0,
+                      height: screenHeight * .8,
+                      decoration: BoxDecoration(borderRadius: BorderRadius.only(bottomRight:Radius.circular(20), topRight: Radius.circular(20)),color: Color.fromARGB(206, 8, 10, 11),), 
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [  
+                          Center( 
+                            child: Container(
+                              child: Row(
+                                mainAxisAlignment:MainAxisAlignment.center,  
+                                children: [
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        width: screenWidth * .9,
+                                        height: screenHeight * .8,
+                                        padding: EdgeInsets.all(0),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            AnimatedOpacity(
+                                              opacity: isContainer1TextVisible ? 1.0 : 0.0, // Fully visible or fully transparent
+                                              duration: Duration(milliseconds: 300), // Animation duration
+                                              curve: Curves.easeInOut, // Animation curve
+                                              child: Container(
+                                                padding: EdgeInsets.all(50),
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      'Map of Sri Lanka',
+                                                      style: GoogleFonts.poppins(
+                                                        textStyle: TextStyle(
+                                                          fontSize: screenWidth > 500 ? 35 : 20,
+                                                          fontWeight: FontWeight.bold,
+                                                          color: Color(0xFFc7e3da),
+                                                          fontStyle: FontStyle.italic,
+                                                          height: 1.2,
+                                                        ),
                                                       ),
+                                                      textAlign: TextAlign.center,
+                                                    ),
+                                                    SizedBox(height: 20),
+                                                    Container(
+                                                      width: 800,
+                                                      child: Text(
+                                                        "Dive into the heart of the Sri Lanka map! This section highlights key locations and landmarks that are essential for the GCE Ordinary Level history syllabus. Use our interactive map to practice marking important sites and test your knowledge through fun games. Whether you’re revising or just getting started, this tool is designed to help you master Sri Lanka’s map with ease.",
+                                                        style: TextStyle(
+                                                          fontSize: screenWidth > 500 ? 16 : 13,
+                                                          color: Colors.white70,
+                                                        ),
+                                                        textAlign: TextAlign.center,
+                                                      ),
+                                                    ),
+                                                    SizedBox(height: 20),
+                                                    screenWidth > 500
+                                                        ? Row(
+                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                            children: [
+                                                              ElevatedButton(
+                                                                onPressed: () {
+                                                                  Navigator.push(
+                                                                    context,
+                                                                    MaterialPageRoute(builder: (context) => ViewerApp()),
+                                                                  );
+                                                                },
+                                                                style: ElevatedButton.styleFrom(
+                                                                  backgroundColor: Color.fromARGB(255, 38, 91, 75),
+                                                                  foregroundColor: Colors.white,
+                                                                  shape: RoundedRectangleBorder(
+                                                                    borderRadius: BorderRadius.circular(20),
+                                                                  ),
+                                                                  minimumSize: Size(150, 40),
+                                                                ),
+                                                                child: Text(
+                                                                  "View Map",
+                                                                  style: TextStyle(fontSize: 16),
+                                                                ),
+                                                              ),
+                                                              SizedBox(width: 15),
+                                                              ElevatedButton(
+                                                                onPressed: () {
+                                                                  Navigator.push(
+                                                                    context,
+                                                                    MaterialPageRoute(builder: (context) => GameOptionsPage(selectedMap: 'Srilanka - Places',selectedDifficulty: 'Easy',selectedPlaces: '5',selectedLanguage: 'Tamil',)),
+                                                                  );
+                                                                },
+                                                                style: ElevatedButton.styleFrom(
+                                                                  backgroundColor: Color.fromARGB(255, 29, 34, 40),
+                                                                  foregroundColor: Colors.white,
+                                                                  shadowColor: Colors.black,
+                                                                  minimumSize: Size(150, 40),
+                                                                ),
+                                                                child: Text(
+                                                                  "Play Game",
+                                                                  style: TextStyle(fontSize: 16),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          )
+                                                        : Column(
+                                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                                            children: [
+                                                              ElevatedButton(
+                                                                onPressed: () {
+                                                                  Navigator.push(
+                                                                    context,
+                                                                    MaterialPageRoute(builder: (context) => ViewerApp()),
+                                                                  );
+                                                                },
+                                                                style: ElevatedButton.styleFrom(
+                                                                  backgroundColor: Color.fromARGB(255, 38, 91, 75),
+                                                                  foregroundColor: Colors.white,
+                                                                  shape: RoundedRectangleBorder(
+                                                                    borderRadius: BorderRadius.circular(20),
+                                                                  ),
+                                                                  minimumSize: Size(55, 30),
+                                                                ),
+                                                                child: Text(
+                                                                  "View Map",
+                                                                  style: TextStyle(fontSize: 14),
+                                                                ),
+                                                              ),
+                                                              SizedBox(height: 15),
+                                                              ElevatedButton(
+                                                                onPressed: () {
+                                                                  Navigator.push(
+                                                                    context,
+                                                                    MaterialPageRoute(builder: (context) => GameOptionsPage(selectedMap: 'Srilanka - Places',selectedDifficulty: 'Easy',selectedPlaces: '5',selectedLanguage: 'Tamil',)),
+                                                                  );
+                                                                },
+                                                                style: ElevatedButton.styleFrom(
+                                                                  backgroundColor: Color.fromARGB(255, 29, 34, 40),
+                                                                  foregroundColor: Colors.white,
+                                                                  shadowColor: Colors.black,
+                                                                  minimumSize: Size(55, 30),
+                                                                ),
+                                                                child: Text(
+                                                                  "Play Game",
+                                                                  style: TextStyle(fontSize: 14),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                ],
                               ),
-                              Positioned(
-                                right: screenWidth > 1000 ? -100 : -50,
-                                child: Text(
-                                  'making your\nol exams easy'.toUpperCase(),
-                                  textAlign: TextAlign.left,
-                                  style: GoogleFonts.poppins(textStyle: TextStyle(fontSize: screenWidth > 1000 ? 25 : 18, color: Colors.white)),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Stack(
-                            clipBehavior: Clip.none,
-                            alignment: Alignment.center,
-                            children: [
-                              Container(
-                                width: screenWidth > 1000 ? 280 : 180,
-                                height: screenWidth > 1000 ? 130 : 100,                                
-                                decoration: BoxDecoration(
-                                  color: Color(0xff2b3038),
-                                  borderRadius: BorderRadius.only(topLeft: Radius.circular(25),bottomLeft: Radius.circular(25))
-                                ),
-                                alignment: Alignment.center,
-                              ),
-                              Container(
-                                width:  screenWidth > 1000 ? 280 : 180,
-                                height: screenWidth > 1000 ? 130 : 100,  
-                                
-                                decoration: BoxDecoration(
-                                                        color: const Color.fromARGB(165, 0, 0, 0),
-                                                        borderRadius: BorderRadius.only(topLeft: Radius.circular(25),bottomLeft: Radius.circular(25))
-                                                      ),   
-                              ),
-                              Positioned(
-                                left: screenWidth > 1000 ? -80 : -40, 
-                                child: Text(
-                                  'Start Your\nLearning Journey'.toUpperCase(),
-                                  textAlign: TextAlign.left,
-                                  style: GoogleFonts.poppins(textStyle: TextStyle(fontSize: screenWidth > 1000 ? 25 : 18, color: Colors.white)),
-                                ),
-                              ),
-                              Positioned(
-                                right: screenWidth > 1000 ? 30 : 15, 
-                                child: Icon(Icons.arrow_downward_rounded,color: Color(0xff38876f),size: screenWidth > 1000 ? 50 : 25,)
-                              ),
-                            ],
+                            ),
                           ),
                         ],
                       ),
                     ),
-                  ),
-
-                  if (screenWidth > 500)
-                  Positioned(
-                    bottom: 50,
-                    child:  Stack(
-                            clipBehavior: Clip.none,
-                            alignment: Alignment.center,
-                            children: [
-                              Container(
-                                width:  200,
-                                height: 40,                             
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  color: Color(0xff38876f),
-                                  borderRadius: BorderRadius.only(topRight:Radius.circular(25),bottomRight: Radius.circular(25))
-                                ),
-                              ),
-                              Positioned(
-                                 right: 1,
-                                child: Text(
-                                  'Developed by  '.toUpperCase(),
-                                  textAlign: TextAlign.left,
-                                  style: GoogleFonts.poppins(textStyle: TextStyle(fontSize: 15, color: Colors.white)),
-                                ),
-                              ),
-                              Positioned(
-                                left: 205,
-                                child:  Text('@Afthab Ahamed',style:TextStyle(fontSize: 16,color: Colors.white),)
-                              ),   
-                             
-                            ],
-                          ),
-                         ),
-                         Positioned(
-                          bottom: 50,
-                          child: GestureDetector(onTap: () {
-                           _launchURL(); 
-                         }, child: Container(width: 350,height: 40,color: const Color.fromARGB(0, 255, 255, 255),),))
-                        
-                                                
-                ],
-              ), 
-            ),
-           
-         
-           
-            Container(
-  color: Color(0xFF20242a),
-  width: screenWidth,
-  height: screenHeight,  // Make sure the container takes up full height if needed
-  child: Stack(
-    children: [
-      Positioned(
-        top: -60,
-        right: -60,
-        child: Image.asset("assets/dots.png"), 
-        width:  200,
-      ),
-      Positioned(
-        bottom: -60,
-        left: -60,
-        child: Image.asset("assets/dots.png"), 
-        width: 200,
-      ),
-      
-        Container(
-          width: screenWidth,
-          height: screenHeight, 
-          color: const Color.fromARGB(165, 0, 0, 0),
-        ),
-      Container(
-        padding: EdgeInsets.all(30),
-        child: 
-        Center(  // Use Center to align the Column horizontally and vertically
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,  // Centers vertically
-          crossAxisAlignment: CrossAxisAlignment.center,  // Centers horizontally
-          children: [
-            SizedBox(height: 40),
-            Text(
-              'About This Website',
-              style: GoogleFonts.poppins(
-                textStyle: TextStyle(
-                  fontSize: screenWidth > 500 ? 35 : 20,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFFc7e3da),
-                  fontStyle: FontStyle.italic,
-                  height: 1.2,
+                  ],
                 ),
-              ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 16),
-            Container(
-              width: 800,
-              child: Text(                
-                "MapMarking is an innovative platform designed to help GCE Ordinary Level students excel in MapMarking. Recognizing the lack of resources in this area of the history syllabus, we've created a fun, interactive space where students can explore marked maps and learn through engaging games. Our platform transforms MapMarking into a game-like experience, making studying both enjoyable and effective. Whether you're preparing for exams or just practicing, our site makes learning history more interactive and exciting.", 
-                style: TextStyle(
-                  fontSize: screenWidth > 500 ? 16 : 13,
-                  color: Colors.white70,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-            SizedBox(height: 20), 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center, 
+              ],
+            ),          
+          ),          
+          Container(
+            height: screenHeight,
+            width: screenWidth,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-              Container(
-          height: 4,
-          width: screenWidth > 500 ? 200 : 80, 
-          decoration: BoxDecoration(
-            color: Color.fromARGB(255, 38, 91, 75), 
-            borderRadius: BorderRadius.circular(20)
-          ),// Line color
-        ), // Space between line and dot
-        SizedBox(width: 10,), 
+                Stack(
+                  children: [
+                    AnimatedOpacity(
+  opacity: isContainer2TextVisible ? 1.0 : 0.0,
+  duration: Duration(milliseconds: 300),
+  curve: Curves.easeInOut,
+  child: SizedBox( // Constrain the Stack
+    width: screenWidth * .5,
+    height: screenHeight * .8,
+    child: Stack(
+      alignment: Alignment.bottomCenter, // Align the Positioned child
+      children: [
         Container(
-          width: 4,
-          height: 4,
-          decoration: BoxDecoration(
-            color: Color.fromARGB(255, 38, 91, 75), // Dot color
-            shape: BoxShape.circle,
+          width: screenWidth * .5,
+          height: screenHeight * .8,
+          child: Image.asset(
+            'assets/dot_mapR.png',
+            fit: BoxFit.fitHeight,
           ),
-        ), 
-            ],), 
-            SizedBox(height: 15), 
-          ],
         ),
-      ),
-      
-      )],
+      ],
+    ),
   ),
-), 
-           Container(
-  color: Color(0xFF20242a),
-  width: screenWidth,
-  height: screenHeight,  // Make sure the container takes up full height if needed
-  child: Stack(
-    children: [
-      Positioned(
-        top:screenWidth > 500 ? 0 : (screenHeight - screenWidth *1.5) /2,  
-        right: 0, 
-        child: Image.asset("assets/dot_map.png",height: screenWidth > 500 ? screenHeight: screenWidth *1.5 ,),   
-         
-      ),
-      
-      
-        Container(
-          width: screenWidth,
-          height: screenHeight, 
-          color: const Color.fromARGB(165, 0, 0, 0),
-        ),
-      Column(mainAxisAlignment: MainAxisAlignment.center,crossAxisAlignment: CrossAxisAlignment.start,
-      children: [ 
-        Container(
-          padding: EdgeInsets.all(50),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start, 
-            children: [
-            Text(
-              'Map of Sri Lanka', 
-              style: GoogleFonts.poppins(
-                textStyle: TextStyle(
-                  fontSize: screenWidth > 500 ? 35 : 20,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFFc7e3da),
-                  fontStyle: FontStyle.italic,
-                  height: 1.2,
+),
+ 
+                    AnimatedContainer(
+                      duration: Duration(milliseconds: 800),
+                      curve: Curves.ease,
+                      width: screenWidth * .9,
+                      height: isContainer2Visible ? screenHeight * .8 : 0,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(20),
+                          topLeft: Radius.circular(20),
+                        ),
+                        color: Color.fromARGB(206, 8, 10, 11),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Center(
+                            child: Container(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      AnimatedOpacity(
+                                        opacity: isContainer2TextVisible ? 1.0 : 0.0,
+                                        duration: Duration(milliseconds: 300),
+                                        curve: Curves.easeInOut,
+                                        child: Container(
+                                          width: screenWidth * .9,
+                                          height: screenHeight * .8,
+                                          padding: EdgeInsets.all(0),
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                'Water Bodies of Srilanka',
+                                                style: GoogleFonts.poppins(
+                                                  textStyle: TextStyle(
+                                                    fontSize: screenWidth > 500 ? 35 : 20,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Color(0xFFc7e3da),
+                                                    fontStyle: FontStyle.italic,
+                                                    height: 1.2,
+                                                  ),
+                                                ),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                              SizedBox(height: 20),
+                                              Container(
+                                                width: screenWidth > 900 ? 800 : screenWidth - 100,
+                                                child: Text(
+                                                  "This section highlights the important waterbodies of Sri Lanka, essential for the GCE Ordinary Level history syllabus. Explore our interactive map to identify and mark lakes, reservoirs, and other key waterbodies while testing your knowledge through fun and engaging games. Whether revising or beginning anew, this tool is here to help you navigate Sri Lanka's aquatic geography with ease!",
+                                                  style: TextStyle(
+                                                    fontSize: screenWidth > 500 ? 16 : 13,
+                                                    color: Colors.white70,
+                                                  ),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ),
+                                              SizedBox(height: 20),
+                                              screenWidth > 500
+                                                  ? Row(
+                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                      children: [
+                                                        ElevatedButton(
+                                                          onPressed: () {
+                                                            Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(builder: (context) => RiversViewerApp()),
+                                                            );
+                                                          },
+                                                          style: ElevatedButton.styleFrom(
+                                                            backgroundColor: Color.fromARGB(255, 38, 91, 75),
+                                                            foregroundColor: Colors.white,
+                                                            shape: RoundedRectangleBorder(
+                                                              borderRadius: BorderRadius.circular(20),
+                                                            ),
+                                                            minimumSize: Size(150, 40),
+                                                          ),
+                                                          child: Text(
+                                                            "View Map",
+                                                            style: TextStyle(fontSize: 16),
+                                                          ),
+                                                        ),
+                                                        SizedBox(width: 15),
+                                                        ElevatedButton(
+                                                          onPressed: () {
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(builder: (context) => GameOptionsPage(selectedMap: 'Srilanka - Water Bodies',selectedDifficulty: 'Easy',selectedPlaces: '5',selectedLanguage: 'Tamil',)),
+                                                            );
+                                                          },
+                                                          style: ElevatedButton.styleFrom(
+                                                            backgroundColor: Color.fromARGB(255, 29, 34, 40),
+                                                            foregroundColor: Colors.white,
+                                                            shadowColor: Colors.black,
+                                                            minimumSize: Size(150, 40),
+                                                          ),
+                                                          child: Text(
+                                                            "Play Game",
+                                                            style: TextStyle(fontSize: 16),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    )
+                                                  : Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                                      children: [
+                                                        ElevatedButton(
+                                                          onPressed: () {
+                                                            Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(builder: (context) => RiversViewerApp()),
+                                                            );
+                                                          },
+                                                          style: ElevatedButton.styleFrom(
+                                                            backgroundColor: Color.fromARGB(255, 38, 91, 75),
+                                                            foregroundColor: Colors.white,
+                                                            shape: RoundedRectangleBorder(
+                                                              borderRadius: BorderRadius.circular(20),
+                                                            ),
+                                                            minimumSize: Size(55, 30),
+                                                          ),
+                                                          child: Text(
+                                                            "View Map",
+                                                            style: TextStyle(fontSize: 14),
+                                                          ),
+                                                        ),
+                                                        SizedBox(height: 15),
+                                                        ElevatedButton(
+                                                          onPressed: () {
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(builder: (context) => GameOptionsPage(selectedMap: 'Srilanka - Water Bodies',selectedDifficulty: 'Easy',selectedPlaces: '5',selectedLanguage: 'Tamil',)),
+                                                            );
+                                                          },
+                                                          style: ElevatedButton.styleFrom(
+                                                            backgroundColor: Color.fromARGB(255, 29, 34, 40),
+                                                            foregroundColor: Colors.white,
+                                                            shadowColor: Colors.black,
+                                                            minimumSize: Size(55, 30),
+                                                          ),
+                                                          child: Text(
+                                                            "Play Game",
+                                                            style: TextStyle(fontSize: 14),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              textAlign: TextAlign.left, 
-              
-            ), 
-            SizedBox(height: 20,), 
-            Container(
-              width: 800,
-              child: Text(
-                "Dive into the heart of the Sri Lanka map! This section highlights key locations and landmarks that are essential for the GCE Ordinary Level history syllabus. Use our interactive map to practice marking important sites and test your knowledge through fun games. Whether you’re revising or just getting started, this tool is designed to help you master Sri Lanka’s map with ease.",
-                style: TextStyle(
-                  fontSize: screenWidth > 500 ? 16 : 13,
-                  color: Colors.white70, 
-                ),
-                textAlign: TextAlign.left, 
-              ),
+              ],
             ),
-            SizedBox(height: 20,), 
-             Row(children: [
-              ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ViewerApp()),
-            );
-              },
-               
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color.fromARGB(255, 38, 91, 75),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                minimumSize: screenWidth < 500 ? Size(75, 30) : Size(150, 40),
-              ), 
-              child: Text(
-                "View Map",
-                style: TextStyle(fontSize: screenWidth < 500 ? 12 : 16),
-              ),
-            ),
-            SizedBox(width: 15,),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => GameOptionsPage(selectedMap: 'Srilanka - Places',selectedDifficulty: 'Easy',selectedPlaces: '5',selectedLanguage: 'Tamil',)), 
-            );
-              },
-              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Color.fromARGB(255, 29, 34, 40),
-                                  foregroundColor: Colors.white,
-                                  shadowColor: Colors.black,
-                                  minimumSize: screenWidth < 500 ? Size(75, 30) : Size(150, 40),
-                                ),
-              child: Text(
-                "Play Game",
-                style: TextStyle(fontSize: screenWidth < 500 ? 12 : 16),
-              ),
-            ),
-             ],)
-             ],),
-        ),
-        
-      ],)
-      
-       ],
-  ),
-), 
-           Container(
-  color: Color(0xFF20242a),
-  width: screenWidth,
-  height: screenHeight,  // Make sure the container takes up full height if needed
-  child: Stack(
-    children: [
-      Positioned(
-        top: 0, 
-        left: 0, 
-        child: Image.asset("assets/dot_mapR.png",fit: BoxFit.fill ,),   
-         
-      ), 
-      Container(
-          width: screenWidth,
-          height: screenHeight, 
-          color: const Color.fromARGB(165, 0, 0, 0),
-        ),
-      
-        /*Container(
-          width: screenWidth,
-          height: screenHeight, 
-          color: const Color.fromARGB(165, 0, 0, 0),
-        ),*/  
+          ),
+          Container(
+            height: screenHeight,
+            width: screenWidth,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center, 
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [              
+                Stack(
+                  children: [
+                    AnimatedOpacity(
+                      opacity: isContainer3TextVisible ? 1.0 : 0.0, // Fully visible or fully transparent 
+                      duration: Duration(milliseconds: 300), // Animation duration
+                      curve: Curves.easeInOut, // Animation curve
+                      child: Container(
+                        width: screenWidth * .9,
+                        height: screenHeight*.8,
+                        child: Image.asset(
+                          'assets/dot_mapWl.png',
+                          fit: BoxFit.fitHeight,
+                        ),
+                      ), 
+                    ),
+                  AnimatedContainer(
+                  duration: Duration(milliseconds: 800),
+                  curve: Curves.ease, 
+  width:isContainer3Visible ? screenWidth * .9 : 0, 
+  height: screenHeight * .8, 
+  decoration: BoxDecoration(borderRadius: BorderRadius.only(bottomRight:Radius.circular(20), topRight: Radius.circular(20)),
+  //color: Color.fromARGB(206, 8, 10, 11) 
+  ), 
+  child: Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [ 
      Center(
         child:Container(
           child: 
            Row(
-          mainAxisAlignment: screenWidth > 900 ? MainAxisAlignment.end:MainAxisAlignment.start,  
+          mainAxisAlignment:MainAxisAlignment.center,  
           children: [
           Column(mainAxisAlignment: MainAxisAlignment.center,crossAxisAlignment: CrossAxisAlignment.start, 
       children: [ 
         Container(
+          width: screenWidth * .9,height: screenHeight*.8, 
+          padding: EdgeInsets.all(0),
+          child: Column(mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center, 
+            children: [ 
+        AnimatedOpacity(
+  opacity: isContainer3TextVisible ? 1.0 : 0.0, // Fully visible or fully transparent
+  duration: Duration(milliseconds: 300), // Animation duration
+  curve: Curves.easeInOut, // Animation curve
+  child:Container(
           padding: EdgeInsets.all(50),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start, 
-            children: [
-            Text(
-              'Water Bodies of Srilanka', 
-              style: GoogleFonts.poppins(
-                textStyle: TextStyle(
-                  fontSize: screenWidth > 500 ? 35 : 20,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFFc7e3da),
-                  fontStyle: FontStyle.italic,
-                  height: 1.2,
-                ),
-              ),
-              textAlign: TextAlign.left, 
-              
-            ), 
-            SizedBox(height: 20,), 
-            Container(
-              width: screenWidth > 900 ? 800 : screenWidth-100,  
-              child: Text(
-                "This section highlights the important waterbodies of Sri Lanka, essential for the GCE Ordinary Level history syllabus. Explore our interactive map to identify and mark lakes, reservoirs, and other key waterbodies while testing your knowledge through fun and engaging games. Whether revising or beginning anew, this tool is here to help you navigate Sri Lanka's aquatic geography with ease!",
-                style: TextStyle(
-                  fontSize: screenWidth > 500 ? 16 : 13,
-                  color: Colors.white70,
-                ),
-                textAlign: TextAlign.left, 
-                
-              ),
-            ),
-            SizedBox(height: 20,), 
-             Row(children: [
-              ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => RiversViewerApp()),
-            );
-              },
-               
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color.fromARGB(255, 38, 91, 75),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                minimumSize: screenWidth < 500 ? Size(75, 30) : Size(150, 40),
-              ), 
-              child: Text(
-                "View Map",
-                style: TextStyle(fontSize: screenWidth < 500 ? 12 : 16),
-              ),
-            ),
-            SizedBox(width: 15,),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push( 
-              context, 
-              MaterialPageRoute(builder: (context) => GameOptionsPage(selectedMap: 'Srilanka - Water Bodies',selectedDifficulty: 'Easy',selectedPlaces: '5',selectedLanguage: 'Tamil',)), 
-            );
-              },
-              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Color.fromARGB(255, 29, 34, 40),
-                                  foregroundColor: Colors.white,
-                                  shadowColor: Colors.black,
-                                  minimumSize: screenWidth < 500 ? Size(75, 30) : Size(150, 40),
-                                ),
-              child: Text(
-                "Play Game",
-                style: TextStyle(fontSize: screenWidth < 500 ? 12 : 16),
-              ),
-            ),
-             ],)
-             ],),
-        ),
-        
-      ],)
-      
-        
-        ],),
-        )) ,
-        
-        
-        ],
-  
-  ),
-), Container(
-  color: Color(0xFF20242a),
-  width: screenWidth,
-  height: screenHeight,  // Make sure the container takes up full height if needed
-  child: Stack(
-    children: [
-      Positioned(
-        top:screenWidth > 500 ? 0 : (screenHeight - screenWidth *1.5) /2,  
-        right: 0, 
-        child: Image.asset("assets/dot_mapW.png",height: screenWidth > 500 ? screenHeight: screenWidth *1.5 ,),   
-         
-      ),
-      
-      
-        Container(
-          width: screenWidth,
-          height: screenHeight, 
-          color: const Color.fromARGB(165, 0, 0, 0),
-        ),
-      Column(mainAxisAlignment: MainAxisAlignment.center,crossAxisAlignment: CrossAxisAlignment.start,
-      children: [ 
-        Container(
-          padding: EdgeInsets.all(50),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start, 
+          child: Column(mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,  
             children: [
             Text(
               'Map of the World', 
@@ -667,7 +781,7 @@ void _scrollListener() {
                   height: 1.2,
                 ),
               ),
-              textAlign: TextAlign.left, 
+              textAlign: TextAlign.center, 
               
             ), 
             SizedBox(height: 20,), 
@@ -679,81 +793,166 @@ void _scrollListener() {
                   fontSize: screenWidth > 500 ? 16 : 13,
                   color: Colors.white70, 
                 ),
-                textAlign: TextAlign.left, 
+                textAlign: TextAlign.center, 
               ),
             ),
             SizedBox(height: 20,), 
-             Row(children: [
+             screenWidth > 500 ?Row(mainAxisAlignment: MainAxisAlignment.center,
+              children: [ 
               ElevatedButton(
               onPressed: () {
-                Navigator.push(
+               /* Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => ViewerApp()),
-            );
+            );*/
               },
                
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color.fromARGB(255, 38, 91, 75),
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(20), 
                 ),
-                minimumSize: screenWidth < 500 ? Size(75, 30) : Size(150, 40),
+                minimumSize: Size(150, 40),
               ), 
               child: Text(
                 "View Map",
-                style: TextStyle(fontSize: screenWidth < 500 ? 12 : 16),
+                style: TextStyle(fontSize: 16),
               ),
             ),
+            
             SizedBox(width: 15,),
-            ElevatedButton(
+            ElevatedButton( 
               onPressed: () {
-                Navigator.push(
+               /* Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => GameOptionsPage(selectedMap: 'Srilanka - Places',selectedDifficulty: 'Easy',selectedPlaces: '5',selectedLanguage: 'Tamil',)), 
-            );
+            );*/ 
               },
               style: ElevatedButton.styleFrom(
                                   backgroundColor: Color.fromARGB(255, 29, 34, 40),
                                   foregroundColor: Colors.white,
                                   shadowColor: Colors.black,
-                                  minimumSize: screenWidth < 500 ? Size(75, 30) : Size(150, 40),
+                                  minimumSize: Size(150, 40),
                                 ),
               child: Text(
                 "Play Game",
-                style: TextStyle(fontSize: screenWidth < 500 ? 12 : 16),
+                style: TextStyle(fontSize: 16), 
+              ),
+            ),
+             ],)
+             :Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                
+              ElevatedButton(
+              onPressed: () {
+               /* Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ViewerApp()),
+            );*/
+              },
+               
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color.fromARGB(255, 38, 91, 75),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20), 
+                ),
+                minimumSize:Size(55, 30),
+              ), 
+              child: Text(
+                "View Map",
+                style: TextStyle(fontSize: 14),
+              ),
+            ),
+            
+            SizedBox(height:15),
+            ElevatedButton( 
+              onPressed: () {
+               /* Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => GameOptionsPage(selectedMap: 'Srilanka - Places',selectedDifficulty: 'Easy',selectedPlaces: '5',selectedLanguage: 'Tamil',)), 
+            );*/ 
+              },
+              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Color.fromARGB(255, 29, 34, 40),
+                                  foregroundColor: Colors.white,
+                                  shadowColor: Colors.black,
+                                  minimumSize: Size(55, 30),
+                                ),
+              child: Text(
+                "Play Game",
+                style: TextStyle(fontSize: 14), 
               ),
             ),
              ],)
              ],),
-        ),
+        ),)
+        
+      ],)
+      ),
         
       ],)
       
-       ],
-  ),
-), 
-           Container(
-  width: screenWidth,
+        
+        ],),
+        )) ,
+        
+         
+  ],),
+
+),
+AnimatedContainer(
+                  duration: Duration(milliseconds: 800),
+                  curve: Curves.ease, 
+                  height: screenHeight * .8,
+  width:isContainer3Visible ? screenWidth * .9 : 0, onEnd: () {
+    setState(() { 
+      isConstruction = true;
+    });
+  }, decoration: BoxDecoration(borderRadius: BorderRadius.only(bottomRight:Radius.circular(20), topRight: Radius.circular(20)),color: Color.fromARGB(206, 8, 10, 11),),),  
+AnimatedOpacity(
+            opacity: isConstruction ? 1.0 : 0.0,
+            duration: Duration(milliseconds: 800),
+            curve: Curves.easeInOut,
+            child: Container(width: screenWidth * .9, 
+  height: screenHeight * .8, child: Center(child: Icon(Icons.construction_rounded,size: 100,color: Color(0xFFc7e3da),),)),
+),
+              ],) 
+            ],),
+          
+  ), 
+  
+         Container(
   height: screenHeight,
-  color: Color(0xFF20242a),
-  child:Stack(
+  width: screenWidth,
+  child:AnimatedOpacity(
+            opacity: isVisitVisible ? 1.0 : 0.0,
+            duration: Duration(milliseconds: 800),
+            curve: Curves.easeInOut,
+            child:      Center(child: Stack(
+    
     children: [
-      Positioned(
-        bottom: 0,
-        left: 0, 
-        child: Image.asset("assets/dot_wave.png",),  
-        width: screenWidth > 500 ? screenWidth : screenHeight,  
-      ),
-      
-      Container(
-          width: screenWidth,
-          height: screenHeight, 
-          color: const Color.fromARGB(165, 0, 0, 0),
-        ),
-      Center(child:  Column(
+    Center(child: Container(
+                    width: screenWidth > 600 ? 100 : 100,
+                    height: screenWidth > 600 ? 100 : 100,
+                    decoration: BoxDecoration(  
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color(0xff265b4b).withOpacity(0.9),
+                          blurRadius: 200,
+                          spreadRadius: 10,
+                        ),
+                      ],
+                    ),
+                  ),), 
+                
+     Column(
         mainAxisAlignment: MainAxisAlignment.center, 
         children: [
+
           Text(
               'Page Visits', 
               style: GoogleFonts.poppins(
@@ -768,24 +967,21 @@ void _scrollListener() {
               textAlign: TextAlign.left, 
               
             ), 
-           
+           SizedBox(height: 20,), 
           VisitorCounterWidget(screenWidth: screenWidth,),],
-      ))
-    ],
-  ) ),
+            
+      )
+  ],))), ), 
   Container(
   width: screenWidth, 
-  height: 600,  
-  color: Color(0xFF20242a),
-  child:Stack(
-    children: [ 
-      
-      Container(
-          width: screenWidth,
-          height: 600,  
-          color: const Color.fromARGB(165, 0, 0, 0),
-        ),
-        Column(children: [
+  height: screenHeight, 
+   
+  child:AnimatedOpacity(
+            opacity: isContactVisible ? 1.0 : 0.0,
+            duration: Duration(milliseconds: 800),
+            curve: Curves.easeInOut,
+            child:Column(mainAxisAlignment: MainAxisAlignment.center, 
+          children: [
           SizedBox(height: 20,), 
           Text(
               'Contact Us', 
@@ -800,30 +996,70 @@ void _scrollListener() {
               ),
               textAlign: TextAlign.center,
             ), 
-            SizedBox(height: 20,),  
+            SizedBox(height: 50,), 
           ContactForm(), 
           SizedBox(height: 20,),  
-        ],)
-    ])) ,
+         
+    ])),),  
     Container(
-  width: screenWidth,
-  height: screenWidth > 500 ? 60 : 50, 
-  color: Color(0xFF20242a),
-  child:Stack(
-    children: [ 
-      
-      Container(
-          width: screenWidth,
-          height: screenWidth > 500 ? 60 : 50,  
-          color: const Color.fromARGB(165, 0, 0, 0),
+      padding: EdgeInsets.only(left :screenWidth * .1,right: screenWidth * .1),  
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+        AnimatedContainer(
+          onEnd: () {
+            setState(() {
+              isFooterTextVisible = true;
+            });
+          },
+          duration: Duration(milliseconds: 500),
+          color: Color(0xFFc7e3da),
+          height: 1, 
+          width: isFooterVisible ? screenWidth*.9 : 0,
         ),
-       Footer()
-    ])) 
-            
-          ],
-        ),
-      ),
-    ); 
+        SizedBox(height: 40,), 
+        AnimatedOpacity(
+            opacity: isFooterTextVisible ? 1.0 : 0.0,
+            duration: Duration(milliseconds: 800),
+            curve: Curves.easeInOut,
+            child:Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.location_pin,color: Colors.red,size: screenWidth > 700 ? 40 : 30,), 
+                     Padding(padding: EdgeInsets.all(0),child:  Text(
+                            'Map Marking'.toUpperCase(),
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.poppins(                               
+                              textStyle: TextStyle(
+                                fontSize:screenWidth > 700 ? 40 : 20, 
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFFc7e3da),
+                                height: 1.2,
+                              ),
+                            ), 
+                          ),),
+                          
+                    ],
+                  ),),
+                  SizedBox(height: 20,), 
+            AnimatedOpacity(
+            opacity: isFooterTextVisible ? 1.0 : 0.0,
+            duration: Duration(milliseconds: 800),
+            curve: Curves.easeInOut,
+            child:      
+            Column(children: [
+              Text('Developed by Afthab Ahamed'.toUpperCase(),textAlign: TextAlign.center,style: GoogleFonts.dmSans(textStyle: TextStyle(fontSize:screenWidth > 700 ? 15 : 10,color: Color(0xFFc7e3da),height: 1.2,), ),),
+              SizedBox(height: 20,),              
+              Text("Special Thanks to \nZayed Marikar – for contributing innovative ideas and feature suggestions.\nYousef Hazari – for providing English translations and contributing creative ideas. \nSithija Nethsara and Poorna Thisal – for Sinhala translations.".toUpperCase(),textAlign: TextAlign.center,style: GoogleFonts.dmSans(textStyle: TextStyle(fontSize:screenWidth > 700 ? 15 : 10,color: Color(0xFFc7e3da),), ),),
+              SizedBox(height: 20,),
+               Text('© 2024 MapMarking. All rights reserved.'.toUpperCase(),textAlign: TextAlign.center,style: GoogleFonts.dmSans(textStyle: TextStyle(fontSize:screenWidth > 700 ? 15 : 10,color: Color(0xFFc7e3da),height: 1.2,), ),),
+                Text('Version 4.0'.toUpperCase(),textAlign: TextAlign.center,style: GoogleFonts.dmSans(textStyle: TextStyle(fontSize:screenWidth > 700 ? 13 : 10,color: Color(0xFFc7e3da),height: 1.2,), ),),
+                SizedBox(height: 40,), 
+            ],))
+      ],),
+    )
+        ],
+      ), 
+    );
   }
-  
-} 
+}
