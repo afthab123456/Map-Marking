@@ -1053,7 +1053,7 @@ AnimatedOpacity(
               Text("Special Thanks to \nZayed Marikar – for contributing innovative ideas and feature suggestions.\nYousef Hazari – for providing English translations and contributing creative ideas. \nSithija Nethsara and Poorna Thisal – for Sinhala translations.".toUpperCase(),textAlign: TextAlign.center,style: GoogleFonts.dmSans(textStyle: TextStyle(fontSize:screenWidth > 700 ? 15 : 10,color: Color(0xFFc7e3da),), ),),
               SizedBox(height: 20,),
                Text('© 2024 MapMarking. All rights reserved.'.toUpperCase(),textAlign: TextAlign.center,style: GoogleFonts.dmSans(textStyle: TextStyle(fontSize:screenWidth > 700 ? 15 : 10,color: Color(0xFFc7e3da),height: 1.2,), ),),
-                Text('Version 4.0'.toUpperCase(),textAlign: TextAlign.center,style: GoogleFonts.dmSans(textStyle: TextStyle(fontSize:screenWidth > 700 ? 13 : 10,color: Color(0xFFc7e3da),height: 1.2,), ),),
+                Text('Version 4.1'.toUpperCase(),textAlign: TextAlign.center,style: GoogleFonts.dmSans(textStyle: TextStyle(fontSize:screenWidth > 700 ? 13 : 10,color: Color(0xFFc7e3da),height: 1.2,), ),),
                 SizedBox(height: 40,), 
             ],))
       ],),

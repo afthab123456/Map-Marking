@@ -131,17 +131,13 @@ TextEditingController _controller = TextEditingController();
         
         
           ),
-          
+          isSearch ?
         Column(
         children: [
           Center(child: Container(
             margin: EdgeInsets.all(20), 
             width: 300,child: 
-        AnimatedOpacity(
-                              opacity: isSearch ? 1.0 : 0.0,
-                              duration: Duration(milliseconds: 500),
-                              curve: Curves.easeInOut,
-                              child:TextField(
+        TextField(
           controller: _controller,
   decoration: InputDecoration(
     suffixIcon: searchQuery.isEmpty ?GestureDetector(onTap: () {       
@@ -194,7 +190,7 @@ TextEditingController _controller = TextEditingController();
     // When the field is tapped, the hint will disappear (optional setup)
   },
 ),
-), ) 
+), 
           ),  !searchQuery.isEmpty
                 && !filteredriverPins.isEmpty && isSearchR
                     ?  Center(child: Container(
@@ -230,7 +226,7 @@ TextEditingController _controller = TextEditingController();
                       ), ):SizedBox(),
            
         ],
-      ),  if (!isSettings&&!islanguageSelect&&!isSearch) 
+      ):SizedBox(),  if (!isSettings&&!islanguageSelect&&!isSearch) 
             Positioned(
                       top: 20,
                       left: 20,
