@@ -63,20 +63,42 @@ class _GameOptionsPageState extends State<GameOptionsPage> {
       body: Stack(
         children: [
           Container(width: screenWidth,height: screenHeight,color: const Color(0xFF20242a),), 
-          Positioned( 
-            top: 0,
+          Positioned(
+            top: 0,  
             left: 0,
-            child: Container(
-              width: 250,
-              child: Image.asset("assets/dots.png"),  
+            child: AnimatedContainer(
+              duration: Duration(milliseconds: 500),
+              width:screenWidth > 600 ? 200 : 100,
+              height: screenWidth > 600 ? 200 : 100,
+              decoration: BoxDecoration( 
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color:  Color(0xff265b4b).withOpacity(0.9),
+                    blurRadius: 400,
+                    spreadRadius: 100,
+                  ),
+                ],
+              ),
             ),
           ),
           Positioned(
-            bottom: 0,
-            right: 0, 
-            child: Container(
-              width: 250,
-              child: Image.asset("assets/dots.png"), 
+            bottom: 0,  
+            right: 0,
+            child: AnimatedContainer(
+              duration: Duration(milliseconds: 500),
+              width:screenWidth > 600 ? 200 : 100,
+              height: screenWidth > 600 ? 200 : 100,
+              decoration: BoxDecoration( 
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color:  Color(0xff265b4b).withOpacity(0.9),
+                    blurRadius: 400,
+                    spreadRadius: 100,
+                  ),
+                ],
+              ),
             ),
           ),
           Container(width: screenWidth,height: screenHeight,color: const Color.fromARGB(165, 0, 0, 0),),
@@ -104,7 +126,7 @@ class _GameOptionsPageState extends State<GameOptionsPage> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(Icons.location_pin,
-                                    size: 33, color: Color.fromARGB(255, 202, 35, 35)),
+                                    size: 33, color: Colors.red),
                                 Text(
                                   'Map\nMarking'.toUpperCase(),
                                   textAlign: TextAlign.center,
@@ -163,7 +185,7 @@ class _GameOptionsPageState extends State<GameOptionsPage> {
                                 onPressed: () {
                                   Navigator.push(
                                     context,
-                                    MaterialPageRoute(builder: (context) => MainPage()),
+                                    MaterialPageRoute(builder: (context) => MyApp()),
                                   );
                                 },
                                 child: Icon(Icons.home_rounded,size: 18,color: Color(0xFFc7e3da),), 
@@ -247,7 +269,6 @@ class _GameOptionsPageState extends State<GameOptionsPage> {
     );
   }
 }
-
 class DropdownTile extends StatelessWidget {
   final String title;
   final List<String> options;
@@ -274,13 +295,14 @@ class DropdownTile extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 8.0),
             child: Text(
               title,
-              style: GoogleFonts.play( 
-                                    textStyle: TextStyle(
-                                      fontSize: 15, 
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFFc7e3da),
-                                      height: 1.2,
-                                    )) 
+              style: GoogleFonts.play(
+                textStyle: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFFc7e3da),
+                  height: 1.2,
+                ),
+              ),
             ),
           ),
           Center(
@@ -300,27 +322,37 @@ class DropdownTile extends StatelessWidget {
               child: DropdownButton<String>(
                 dropdownColor: Color.fromARGB(255, 13, 15, 18),
                 value: selectedValue,
-                hint: Text("Select", style: GoogleFonts.play( 
-                                    textStyle: TextStyle(
-                                      fontSize: 15, 
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFFc7e3da),
-                                      height: 1.2,
-                                    )),), 
+                hint: Text(
+                  "Select",
+                  style: GoogleFonts.play(
+                    textStyle: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFFc7e3da),
+                      height: 1.2,
+                    ),
+                  ),
+                ),
                 isExpanded: true,
                 icon: Icon(Icons.arrow_drop_down, color: Colors.white),
                 items: options
-                    .map((option) => DropdownMenuItem<String>(
-                          value: option,
-                          child: Text(option, style: GoogleFonts.play( 
-                                    textStyle: TextStyle(
-                                      fontSize: 15, 
-                                      fontWeight: FontWeight.bold,
-                                      color: Color.fromARGB(255, 255, 255, 255),
-                                      height: 1.2,
-                                    ),)),
-                        ))
-                    .toList(), 
+                    .map(
+                      (option) => DropdownMenuItem<String>(
+                        value: option,
+                        child: Text(
+                          option,
+                          style: GoogleFonts.play(
+                            textStyle: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 255, 255, 255),
+                              height: 1.2,
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                    .toList(),
                 onChanged: onChanged,
                 underline: SizedBox(),
               ),

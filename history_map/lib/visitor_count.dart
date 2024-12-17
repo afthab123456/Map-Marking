@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
- bool _hasIncremented = true; //keep this true for testing so it does not update and remove before the main release
+ bool _hasIncremented = false; //keep this true for testing so it does not update and remove before the main release
 class VisitorCounterWidget extends StatefulWidget {
   final double screenWidth;
  

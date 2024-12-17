@@ -18,9 +18,11 @@ class GridOverlay extends StatefulWidget {
   @override
   _GridOverlayState createState() => _GridOverlayState();
 }
+
 String tappedLabel = '';
+
 class _GridOverlayState extends State<GridOverlay> {
-  List<Map<String, dynamic>> labeledCells = [];  // Store labeled cells fetched from Firebase
+  List<Map<String, dynamic>> labeledCells = [];
    
 
   @override
@@ -29,7 +31,6 @@ class _GridOverlayState extends State<GridOverlay> {
     _loadLabeledData();
   }
 
-  // Fetch labeled data from Firebase
   Future<void> _loadLabeledData() async {
     try {
       var snapshot = await FirebaseFirestore.instance
@@ -59,8 +60,7 @@ class _GridOverlayState extends State<GridOverlay> {
     int tappedRow = (position.dy / cellHeight).floor();
 
     int tappedCellIndex = tappedRow * widget.columns + tappedColumn;
-
-    // Check if tapped cell is labeled
+    
     String label = '0';
     for (var labelData in labeledCells) {
       if (labelData['cells'].contains(tappedCellIndex)) {
@@ -95,7 +95,6 @@ class _GridOverlayState extends State<GridOverlay> {
 class GridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    // No grid lines, no highlighted cells
   }
 
   @override
