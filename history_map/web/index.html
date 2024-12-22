@@ -28,61 +28,12 @@
   <meta name="title" content="Map Marking - Study Maps for Your O/L Exam">
 
   <!-- Favicon -->
-   <link rel="icon" href="favicon.png" type="image/png">
+  <link rel="icon" href="favicon.png" type="image/png">
+  <link rel="shortcut icon" href="favicon.png" type="image/png">
 
   <title>Map Marking</title>
   <link rel="manifest" href="manifest.json">
-
-  <script>
-    var serviceWorkerVersion = '4.2.0'; // Update this version on every new deployment
-    var scriptLoaded = false;
-    function loadMainDartJs() {
-      if (scriptLoaded) {
-        return;
-      }
-      scriptLoaded = true;
-      var scriptTag = document.createElement('script');
-      scriptTag.src = 'main.dart.js?v=' + serviceWorkerVersion;
-      scriptTag.type = 'application/javascript';
-      document.body.append(scriptTag);
-    }
-
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function () {
-        var serviceWorkerUrl = 'flutter_service_worker.js?v=' + serviceWorkerVersion;
-        navigator.serviceWorker.register(serviceWorkerUrl)
-          .then((reg) => {
-            function waitForActivation(serviceWorker) {
-              serviceWorker.addEventListener('statechange', () => {
-                if (serviceWorker.state == 'activated') {
-                  console.log('Installed new service worker.');
-                  loadMainDartJs();
-                }
-              });
-            }
-            if (!reg.active && (reg.installing || reg.waiting)) {
-              waitForActivation(reg.installing || reg.waiting);
-            } else if (!reg.active.scriptURL.endsWith(serviceWorkerVersion)) {
-              console.log('New service worker available.');
-              reg.update();
-              waitForActivation(reg.installing);
-            } else {
-              console.log('Loading app from service worker.');
-              loadMainDartJs();
-            }
-          });
-
-        setTimeout(() => {
-          if (!scriptLoaded) {
-            console.warn('Service worker disabled...');
-            loadMainDartJs();
-          }
-        }, 4000);
-      });
-    } else {
-      loadMainDartJs();
-    }
-  </script>
+  
 </head>
 <body>
   <script src="flutter_bootstrap.js" async></script>  
