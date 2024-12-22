@@ -334,7 +334,7 @@ TextEditingController _controller = TextEditingController();
               }).toList(),
             ),
             SizedBox(height: 20),
-            Text('riverPin Visibility', style: GoogleFonts.play( 
+            Text('Pin Visibility', style: GoogleFonts.play( 
                                     textStyle: TextStyle(
                                       fontSize: 15, 
                                       fontWeight: FontWeight.bold,
