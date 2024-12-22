@@ -1063,7 +1063,7 @@ AnimatedOpacity(
 ),
 SizedBox(height: 20,),
                Text('© 2024 MapMarking. All rights reserved.'.toUpperCase(),textAlign: TextAlign.center,style: GoogleFonts.dmSans(textStyle: TextStyle(fontSize:screenWidth > 700 ? 15 : 10,color: Color(0xFFc7e3da),height: 1.2,), ),),
-                Text('Version 4.1'.toUpperCase(),textAlign: TextAlign.center,style: GoogleFonts.dmSans(textStyle: TextStyle(fontSize:screenWidth > 700 ? 13 : 10,color: Color(0xFFc7e3da),height: 1.2,), ),),
+                Text('Version 4.22'.toUpperCase(),textAlign: TextAlign.center,style: GoogleFonts.dmSans(textStyle: TextStyle(fontSize:screenWidth > 700 ? 13 : 10,color: Color(0xFFc7e3da),height: 1.2,), ),),
                 SizedBox(height: 40,), 
             ],))
       ],),
