@@ -316,7 +316,6 @@ void dispose() {
             height: screenHeight,
             width: screenWidth, 
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [              
                 Stack(
                   children: [
@@ -345,9 +344,9 @@ void dispose() {
                     AnimatedContainer( 
                       duration: Duration(milliseconds: 800),
                       curve: Curves.ease,
-                      width:isContainer1Visible ? screenWidth * .9 : 0,
-                      height: screenHeight * .8,
-                      decoration: BoxDecoration(borderRadius: BorderRadius.only(bottomRight:Radius.circular(20), topRight: Radius.circular(20)),color: Color.fromARGB(206, 8, 10, 11),), 
+                      width: screenWidth * .9,
+                      height: isContainer1Visible ?  screenHeight * .8 : 0,
+                      decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(20)),color: Color.fromARGB(206, 8, 10, 11),), 
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [  
@@ -518,7 +517,7 @@ void dispose() {
             height: screenHeight,
             width: screenWidth,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              
               children: [
                 Stack(
                   children: [
@@ -551,9 +550,8 @@ void dispose() {
                       width: screenWidth * .9,
                       height: isContainer2Visible ? screenHeight * .8 : 0,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(20),
-                          topLeft: Radius.circular(20),
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(20), 
                         ),
                         color: Color.fromARGB(206, 8, 10, 11),
                       ),
@@ -719,10 +717,9 @@ void dispose() {
             width: screenWidth,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center, 
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [              
                 Stack(
-                  children: [
+                  children: [ 
                     AnimatedOpacity(
                       opacity: isContainer3TextVisible ? 1.0 : 0.0, // Fully visible or fully transparent 
                       duration: Duration(milliseconds: 300), // Animation duration
@@ -739,11 +736,11 @@ void dispose() {
                   AnimatedContainer(
                   duration: Duration(milliseconds: 800),
                   curve: Curves.ease, 
-  width:isContainer3Visible ? screenWidth * .9 : 0, 
-  height: screenHeight * .8, 
-  decoration: BoxDecoration(borderRadius: BorderRadius.only(bottomRight:Radius.circular(20), topRight: Radius.circular(20)),
+  width: screenWidth * .9, 
+  height:isContainer3Visible ? screenHeight * .8 : 0, 
+  decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(20)),
   //color: Color.fromARGB(206, 8, 10, 11) 
-  ), 
+  ),  
   child: Column(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [ 
@@ -906,12 +903,12 @@ void dispose() {
 AnimatedContainer(
                   duration: Duration(milliseconds: 800),
                   curve: Curves.ease, 
-                  height: screenHeight * .8,
-  width:isContainer3Visible ? screenWidth * .9 : 0, onEnd: () {
+                  height: isContainer3Visible ? screenHeight * .8 : 0,
+  width: screenWidth * .9, onEnd: () {
     setState(() { 
       isConstruction = true;
     });
-  }, decoration: BoxDecoration(borderRadius: BorderRadius.only(bottomRight:Radius.circular(20), topRight: Radius.circular(20)),color: Color.fromARGB(206, 8, 10, 11),),),  
+  }, decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(20)),color: Color.fromARGB(206, 8, 10, 11),),),  
 AnimatedOpacity(
             opacity: isConstruction ? 1.0 : 0.0,
             duration: Duration(milliseconds: 800),
@@ -1063,7 +1060,7 @@ AnimatedOpacity(
 ),
 SizedBox(height: 20,),
                Text('© 2024 MapMarking. All rights reserved.'.toUpperCase(),textAlign: TextAlign.center,style: GoogleFonts.dmSans(textStyle: TextStyle(fontSize:screenWidth > 700 ? 15 : 10,color: Color(0xFFc7e3da),height: 1.2,), ),),
-                Text('Version 4.2'.toUpperCase(),textAlign: TextAlign.center,style: GoogleFonts.dmSans(textStyle: TextStyle(fontSize:screenWidth > 700 ? 13 : 10,color: Color(0xFFc7e3da),height: 1.2,), ),),
+                Text('Version 4.3'.toUpperCase(),textAlign: TextAlign.center,style: GoogleFonts.dmSans(textStyle: TextStyle(fontSize:screenWidth > 700 ? 13 : 10,color: Color(0xFFc7e3da),height: 1.2,), ),),
                 SizedBox(height: 40,), 
             ],))
       ],),

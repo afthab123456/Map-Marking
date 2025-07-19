@@ -114,7 +114,8 @@ class _GameOptionsPageState extends State<GameOptionsPage> {
                     margin: EdgeInsets.symmetric(horizontal: 20),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      color: Color.fromARGB(255, 19, 21, 24),
+                      color: Color.fromARGB(0, 20, 24, 23),
+                      border: Border.all(width: 1, color: const Color.fromARGB(86, 98, 148, 133))
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
