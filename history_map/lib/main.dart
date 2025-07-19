@@ -98,7 +98,7 @@ class _MainPageState extends State<MainPage> {
           isContainer2TextVisible = true;
         });
       }
-      if ((_scrollController.offset > (MediaQuery.of(context).size.height * 3.2 )) && !isContainer3Visible) {
+      /*if ((_scrollController.offset > (MediaQuery.of(context).size.height * 3.2 )) && !isContainer3Visible) {
         setState(() {
           isContainer3Visible = true;
         }); 
@@ -106,18 +106,18 @@ class _MainPageState extends State<MainPage> {
         setState(() {
           isContainer3TextVisible = true;
         });
-      }
-      if ((_scrollController.offset > (MediaQuery.of(context).size.height * 4.8)) && !isVisitVisible) {
+      }*/
+      if ((_scrollController.offset > (MediaQuery.of(context).size.height * /*4.8*/ 3.8)) && !isVisitVisible) {
         setState(() { 
           isVisitVisible = true;
         });       
       }
-      if ((_scrollController.offset > (MediaQuery.of(context).size.height * 5.8)) && !isContactVisible) {
+      if ((_scrollController.offset > (MediaQuery.of(context).size.height * /*5.8*/ 4.8)) && !isContactVisible) {
         setState(() {
           isContactVisible = true; 
         });       
       }
-      if ((_scrollController.offset > (MediaQuery.of(context).size.height * 6.3)) && !isFooterVisible) {
+      if ((_scrollController.offset > (MediaQuery.of(context).size.height * /*6.3*/ 5.1)) && !isFooterVisible) {
         setState(() {
           isFooterVisible = true;
         });       
@@ -712,7 +712,7 @@ void dispose() {
               ],
             ),
           ),
-          Container(
+          /*Container(
             height: screenHeight,
             width: screenWidth,
             child: Column(
@@ -920,7 +920,7 @@ AnimatedOpacity(
             ],),
           
   ), 
-  
+  */
          Container(
   height: screenHeight,
   width: screenWidth,
@@ -1060,7 +1060,7 @@ AnimatedOpacity(
 ),
 SizedBox(height: 20,),
                Text('© 2024 MapMarking. All rights reserved.'.toUpperCase(),textAlign: TextAlign.center,style: GoogleFonts.dmSans(textStyle: TextStyle(fontSize:screenWidth > 700 ? 15 : 10,color: Color(0xFFc7e3da),height: 1.2,), ),),
-                Text('Version 4.3'.toUpperCase(),textAlign: TextAlign.center,style: GoogleFonts.dmSans(textStyle: TextStyle(fontSize:screenWidth > 700 ? 13 : 10,color: Color(0xFFc7e3da),height: 1.2,), ),),
+                Text('Version 4.3.1'.toUpperCase(),textAlign: TextAlign.center,style: GoogleFonts.dmSans(textStyle: TextStyle(fontSize:screenWidth > 700 ? 13 : 10,color: Color(0xFFc7e3da),height: 1.2,), ),),
                 SizedBox(height: 40,), 
             ],))
       ],),
