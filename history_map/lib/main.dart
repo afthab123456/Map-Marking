@@ -84,7 +84,7 @@ class _MainPageState extends State<MainPage> {
         setState(() {
           isContainer1Visible = true;
         }); 
-        await Future.delayed(Duration(milliseconds: 800));
+        await Future.delayed(Duration(milliseconds: 200));
         setState(() {
           isContainer1TextVisible = true;
         });
@@ -93,7 +93,7 @@ class _MainPageState extends State<MainPage> {
         setState(() {
           isContainer2Visible = true;
         });
-        await Future.delayed(Duration(milliseconds: 800)); 
+        await Future.delayed(Duration(milliseconds: 200)); 
         setState(() {
           isContainer2TextVisible = true;
         });
@@ -345,7 +345,7 @@ void dispose() {
                       duration: Duration(milliseconds: 800),
                       curve: Curves.ease,
                       width: screenWidth * .9,
-                      height: isContainer1Visible ?  screenHeight * .8 : 0,
+                      height: /*isContainer1Visible ? */ screenHeight * .8 /*: 0*/,
                       decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(20)),color: Color.fromARGB(206, 8, 10, 11),), 
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -548,7 +548,7 @@ void dispose() {
                       duration: Duration(milliseconds: 800),
                       curve: Curves.ease,
                       width: screenWidth * .9,
-                      height: isContainer2Visible ? screenHeight * .8 : 0,
+                      height: /*isContainer2Visible ?*/ screenHeight * .8 /*: 0*/,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(
                           Radius.circular(20), 
@@ -1060,7 +1060,7 @@ AnimatedOpacity(
 ),
 SizedBox(height: 20,),
                Text('© 2024 MapMarking. All rights reserved.'.toUpperCase(),textAlign: TextAlign.center,style: GoogleFonts.dmSans(textStyle: TextStyle(fontSize:screenWidth > 700 ? 15 : 10,color: Color(0xFFc7e3da),height: 1.2,), ),),
-                Text('Version 4.3.1'.toUpperCase(),textAlign: TextAlign.center,style: GoogleFonts.dmSans(textStyle: TextStyle(fontSize:screenWidth > 700 ? 13 : 10,color: Color(0xFFc7e3da),height: 1.2,), ),),
+                Text('Version 4.3.2'.toUpperCase(),textAlign: TextAlign.center,style: GoogleFonts.dmSans(textStyle: TextStyle(fontSize:screenWidth > 700 ? 13 : 10,color: Color(0xFFc7e3da),height: 1.2,), ),),
                 SizedBox(height: 40,), 
             ],))
       ],),
