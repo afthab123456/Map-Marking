@@ -5,6 +5,7 @@ import 'package:MapMarking/GridOverlayForTheRiverGame.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:MapMarking/main.dart';
@@ -14,15 +15,16 @@ import 'package:MapMarking/widgets/riverPin.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load();
   await Firebase.initializeApp( 
     options: FirebaseOptions(
-      apiKey: "AIzaSyB_TbwLrkbVfS4dvrlWLAwZTmdtZEBa4ko",
-      authDomain: "historymap-f4e49.firebaseapp.com",
-      projectId: "historymap-f4e49",
-      storageBucket: "historymap-f4e49.firebasestorage.app",
-      messagingSenderId: "520243215533",
-      appId: "1:520243215533:web:78965dedfe72246d445a24",
-      measurementId: "G-ELRTJMMGKN",
+      apiKey: dotenv.env['FIREBASE_API_KEY'] ?? '',
+      authDomain: dotenv.env['FIREBASE_AUTH_DOMAIN'] ?? '',
+      projectId: dotenv.env['FIREBASE_PROJECT_ID'] ?? '',
+      storageBucket: dotenv.env['FIREBASE_STORAGE_BUCKET'] ?? '',
+      messagingSenderId: dotenv.env['FIREBASE_MESSAGING_SENDER_ID'] ?? '',
+      appId: dotenv.env['FIREBASE_APP_ID'] ?? '',
+      measurementId: dotenv.env['FIREBASE_MEASUREMENT_ID'] ?? '',
     ),
   );
   runApp(RiversViewerApp()); 
